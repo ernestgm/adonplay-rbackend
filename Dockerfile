@@ -29,6 +29,11 @@ RUN bundle install --jobs $(nproc)
 # Copia el resto de tu aplicación al directorio de trabajo.
 COPY . .
 
+COPY entrypoint.sh .
+RUN chmod +x ./entrypoint.sh
+
+# Usa el script de entrada
+ENTRYPOINT ["sh", "./entrypoint.sh"]
 # Expone el puerto que tu aplicación escuchará (por ejemplo, para Rails).
 # Asegúrate de que este puerto coincida con el puerto que tu aplicación usa.
 EXPOSE 9000
