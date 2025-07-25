@@ -8,7 +8,10 @@ class Slide < ApplicationRecord
   # Validations
   validates :name, presence: true
   validates :business_id, presence: true
-  
+  validates :description, presence: false
+  validates :description_position, presence: false
+  validates :text_size, presence: false
+
   # Custom validation messages
   def messages
     {

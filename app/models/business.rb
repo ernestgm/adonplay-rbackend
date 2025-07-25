@@ -7,8 +7,8 @@ class Business < ApplicationRecord
 
   # Validations
   validates :name, presence: true
-  validates :description, presence: true
   validates :owner_id, presence: true
+  validates :description, presence: false
   
   # Custom validation messages
   def messages

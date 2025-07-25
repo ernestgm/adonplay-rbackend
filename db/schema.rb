@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_25_043300) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_25_091827) do
   create_table "businesses", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description", null: false
@@ -101,6 +101,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_25_043300) do
     t.bigint "business_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "description_position"
+    t.string "text_size"
+    t.string "description"
     t.index ["business_id"], name: "index_slides_on_business_id"
   end
 
