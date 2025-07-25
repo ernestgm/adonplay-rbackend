@@ -7,4 +7,15 @@ class Slide < ApplicationRecord
 
   # Validations
   validates :name, presence: true
+  validates :business_id, presence: true
+  
+  # Custom validation messages
+  def messages
+    {
+      'name.presence' => 'El nombre es obligatorio.',
+      'name.string' => 'El nombre debe ser una cadena de texto.',
+      'business_id.presence' => 'El negocio es obligatorio.',
+      'business_id.exists' => 'El negocio seleccionado no existe.'
+    }
+  end
 end

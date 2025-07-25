@@ -10,12 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_24_053300) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_25_043300) do
   create_table "businesses", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "owner_id", null: false
+    t.index ["owner_id"], name: "index_businesses_on_owner_id"
   end
 
   create_table "devices", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -109,9 +111,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_24_053300) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "password_digest", null: false
+    t.string "phone"
+    t.boolean "enabled", default: true
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "businesses", "users", column: "owner_id"
   add_foreign_key "devices", "marquees"
   add_foreign_key "devices", "qrs"
   add_foreign_key "devices", "slides"

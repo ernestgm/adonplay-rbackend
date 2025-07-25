@@ -12,6 +12,13 @@ module Api
           render json: { error: 'Invalid email or password' }, status: :unauthorized
         end
       end
+
+      # DELETE /api/v1/logout
+      def logout
+        # In a JWT-based authentication system, the token is typically invalidated on the client side
+        # Here we just return a success message
+        render json: { message: 'Logged out successfully' }, status: :ok
+      end
     end
   end
 end

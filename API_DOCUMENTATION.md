@@ -29,9 +29,31 @@ POST /api/v1/login
     "name": "John Doe",
     "email": "user@example.com",
     "role": "admin",
+    "phone": "1234567890",
+    "enabled": true,
     "created_at": "2025-07-24T04:37:00.000Z",
     "updated_at": "2025-07-24T04:37:00.000Z"
   }
+}
+```
+
+### Logout
+
+```
+DELETE /api/v1/logout
+```
+
+**Headers:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+```
+
+**Response:**
+
+```json
+{
+  "message": "Logged out successfully"
 }
 ```
 
@@ -47,13 +69,13 @@ POST /api/v1/users
 
 ```json
 {
-  "user": {
-    "name": "John Doe",
-    "email": "user@example.com",
-    "password": "password123",
-    "password_confirmation": "password123",
-    "role": "owner"
-  }
+  "name": "John Doe",
+  "email": "user@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "role": "owner",
+  "phone": "1234567890",
+  "enabled": true
 }
 ```
 
@@ -65,6 +87,8 @@ POST /api/v1/users
   "name": "John Doe",
   "email": "user@example.com",
   "role": "owner",
+  "phone": "1234567890",
+  "enabled": true,
   "created_at": "2025-07-24T04:37:00.000Z",
   "updated_at": "2025-07-24T04:37:00.000Z"
 }
@@ -140,12 +164,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
 
 ```json
 {
-  "user": {
-    "name": "John Updated",
-    "email": "updated@example.com",
-    "password": "newpassword",
-    "password_confirmation": "newpassword"
-  }
+  "name": "John Updated",
+  "email": "updated@example.com",
+  "password": "newpassword",
+  "password_confirmation": "newpassword",
+  "phone": "9876543210",
+  "enabled": true
 }
 ```
 
@@ -157,6 +181,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
   "name": "John Updated",
   "email": "updated@example.com",
   "role": "admin",
+  "phone": "9876543210",
+  "enabled": true,
   "created_at": "2025-07-24T04:37:00.000Z",
   "updated_at": "2025-07-24T04:38:00.000Z"
 }
@@ -195,7 +221,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
 ### Delete Multiple Users (Admin Only)
 
 ```
-DELETE /api/v1/users/destroy_multiple
+DELETE /api/v1/users
 ```
 
 **Headers:**
@@ -242,7 +268,7 @@ Here are some example curl commands to test the API:
 ```bash
 curl -X POST http://localhost:9000/api/v1/users \
   -H "Content-Type: application/json" \
-  -d '{"user": {"name": "John Doe", "email": "user@example.com", "password": "password123", "password_confirmation": "password123", "role": "admin"}}'
+  -d '{"name": "John Doe", "email": "user@example.com", "password": "password123", "password_confirmation": "password123", "role": "admin", "phone": "1234567890", "enabled": true}'
 ```
 
 ### Login
@@ -273,7 +299,7 @@ curl -X GET http://localhost:9000/api/v1/users/1 \
 curl -X PUT http://localhost:9000/api/v1/users/1 \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
-  -d '{"user": {"name": "John Updated", "email": "updated@example.com"}}'
+  -d '{"name": "John Updated", "email": "updated@example.com", "phone": "9876543210", "enabled": true}'
 ```
 
 ### Delete User (Owner or Admin Only)
@@ -286,15 +312,69 @@ curl -X DELETE http://localhost:9000/api/v1/users/1 \
 ### Delete Multiple Users (Admin Only)
 
 ```bash
-curl -X DELETE http://localhost:9000/api/v1/users/destroy_multiple \
+curl -X DELETE http://localhost:9000/api/v1/users \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   -d '{"ids": [2, 3, 4]}'
 ```
 
+## Error Handling
+
+When a validation error occurs, the API returns a structured error response with the field name and the error message. The response has the following format:
+
+```json
+{
+  "errors": {
+    "field_name": [
+      {
+        "type": "error_type",
+        "message": "Error message for the field"
+      }
+    ]
+  }
+}
+```
+
+For example, if you try to create a user without providing a name, you'll get the following response:
+
+```json
+{
+  "errors": {
+    "name": [
+      {
+        "type": "blank",
+        "message": "El nombre es obligatorio."
+      }
+    ]
+  }
+}
+```
+
+If multiple fields have errors, they will all be included in the response:
+
+```json
+{
+  "errors": {
+    "name": [
+      {
+        "type": "blank",
+        "message": "El nombre es obligatorio."
+      }
+    ],
+    "email": [
+      {
+        "type": "invalid",
+        "message": "El formato del correo electrónico no es válido."
+      }
+    ]
+  }
+}
+```
+
 ## Notes
 
 - The token received from the login endpoint should be included in the Authorization header for all protected endpoints.
+- All API endpoints now accept direct JSON format without nesting. For example, instead of `{"user": {"name": "..."}}`, use `{"name": "..."}`.
 - Only admin users can access the index endpoint to list all users.
 - The index endpoint excludes the currently authenticated user from the results.
 - Users with the "owner" role can only edit their own profile, while admins can edit any profile.

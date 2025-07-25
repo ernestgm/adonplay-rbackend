@@ -3,11 +3,11 @@ module Api
     class UsersController < ApplicationController
       include Authenticable
       include Authorizable
+      include ErrorFormatter
       
       skip_before_action :authenticate_request, only: [:create]
-      before_action :set_user, only: [:show, :update, :destroy]
-      before_action :admin_only!, only: [:index]
-      before_action -> { owner_or_admin_only!(@user.id) }, only: [:destroy]
+      before_action :set_user, only: [:show, :update]
+      before_action :admin_only!, only: [:index, :destroy]
       before_action :authorize_update, only: [:update]
 
       # GET /api/v1/users
@@ -28,7 +28,7 @@ module Api
         if @user.save
           render json: UserSerializer.new(@user).as_json, status: :created
         else
-          render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: format_errors(@user) }, status: :unprocessable_entity
         end
       end
 
@@ -37,7 +37,7 @@ module Api
         if @user.update(user_params)
           render json: UserSerializer.new(@user).as_json, status: :ok
         else
-          render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: format_errors(@user) }, status: :unprocessable_entity
         end
       end
 
@@ -72,7 +72,8 @@ module Api
       end
 
       def user_params
-        params.require(:user).permit(:name, :email, :role, :password, :password_confirmation)
+        # Support direct JSON format without nesting
+        params.permit(:name, :email, :role, :password, :password_confirmation, :phone, :enabled)
       end
       
       # Custom authorization for update action
