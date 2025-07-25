@@ -26,7 +26,7 @@ module Api
         @business = Business.new(business_params)
         
         # Set owner_id to current user if not admin
-        if current_user.role != 'admin' || !@business.owner_id
+        if current_user.role != 'admin' && !@business.owner_id
           @business.owner_id = current_user.id
         end
         
