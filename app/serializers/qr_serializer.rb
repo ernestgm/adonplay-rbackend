@@ -10,6 +10,7 @@ class QrSerializer
       info: @qr.info,
       position: @qr.position,
       business_id: @qr.business_id,
+      business: @qr.business ? BusinessSerializer.new(@qr.business).as_json : nil,
       created_at: @qr.created_at,
       updated_at: @qr.updated_at
     }

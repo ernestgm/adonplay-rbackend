@@ -20,23 +20,30 @@ Rails.application.routes.draw do
       resources :businesses, only: [:index, :show, :create, :update]
       delete '/businesses', to: 'businesses#destroy' # Bulk delete businesses
       
-      resources :devices, only: [:index, :show, :create, :update, :destroy]
+      resources :devices, only: [:index, :show, :create, :update]
       delete '/devices', to: 'devices#destroy' # Bulk delete devices
       
-      resources :marquees, only: [:index, :show, :create, :update, :destroy]
+      resources :marquees, only: [:index, :show, :create, :update]
       delete '/marquees', to: 'marquees#destroy' # Bulk delete marquees
       
-      resources :media, only: [:index, :show, :create, :update, :destroy]
+      # Media routes
+      resources :media, only: [:index, :show, :create, :update]
       delete '/media', to: 'media#destroy' # Bulk delete media
       
-      resources :playlists, only: [:index, :show, :create, :update, :destroy]
-      delete '/playlists', to: 'playlists#destroy' # Bulk delete playlists
+      # Slide Media routes
+      resources :slide_media, only: [:show, :create, :update]
+      delete '/slide_media', to: 'slide_media#destroy' # Bulk delete media
       
-      resources :qrs, only: [:index, :show, :create, :update, :destroy]
-      delete '/qrs', to: 'qrs#destroy' # Bulk delete QRs
-      
-      resources :slides, only: [:index, :show, :create, :update, :destroy]
+      # Nested routes for slides and media
+      resources :slides, only: [:index, :show, :create, :update] do
+        resources :media, only: [:index], controller: 'slide_media'
+        post '/media/reorder', to: 'slide_media#reorder'
+      end
       delete '/slides', to: 'slides#destroy' # Bulk delete slides
+      
+      
+      resources :qrs, only: [:index, :show, :create, :update]
+      delete '/qrs', to: 'qrs#destroy' # Bulk delete QRs
     end
   end
 

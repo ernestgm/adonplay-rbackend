@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_25_091827) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_27_010000) do
   create_table "businesses", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description", null: false
@@ -50,30 +50,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_25_091827) do
     t.string "file_path", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "playlist_media", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "playlist_id", null: false
-    t.bigint "media_id", null: false
-    t.integer "duration", null: false
-    t.text "description", null: false
-    t.string "text_size", null: false
-    t.string "description_position", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["media_id"], name: "index_playlist_media_on_media_id"
-    t.index ["playlist_id", "media_id"], name: "index_playlist_media_on_playlist_id_and_media_id", unique: true
-    t.index ["playlist_id"], name: "index_playlist_media_on_playlist_id"
-  end
-
-  create_table "playlists", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name", null: false
-    t.bigint "slide_id", null: false
-    t.bigint "qr_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["qr_id"], name: "index_playlists_on_qr_id"
-    t.index ["slide_id"], name: "index_playlists_on_slide_id"
+    t.bigint "owner_id"
+    t.index ["media_type"], name: "index_media_on_media_type"
+    t.index ["owner_id"], name: "index_media_on_owner_id"
   end
 
   create_table "qrs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -91,8 +70,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_25_091827) do
     t.bigint "media_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "order", default: 0, null: false
+    t.integer "duration", default: 5, null: false
+    t.bigint "audio_media_id"
+    t.bigint "qr_id"
+    t.text "description"
+    t.string "text_size"
+    t.string "description_position"
+    t.index ["audio_media_id"], name: "index_slide_media_on_audio_media_id"
     t.index ["media_id"], name: "index_slide_media_on_media_id"
+    t.index ["qr_id"], name: "index_slide_media_on_qr_id"
     t.index ["slide_id", "media_id"], name: "index_slide_media_on_slide_id_and_media_id", unique: true
+    t.index ["slide_id", "order"], name: "index_slide_media_on_slide_id_and_order"
     t.index ["slide_id"], name: "index_slide_media_on_slide_id"
   end
 
@@ -102,7 +91,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_25_091827) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "description_position"
-    t.string "text_size"
+    t.string "description_size"
     t.string "description"
     t.index ["business_id"], name: "index_slides_on_business_id"
   end
@@ -124,12 +113,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_25_091827) do
   add_foreign_key "devices", "qrs"
   add_foreign_key "devices", "slides"
   add_foreign_key "marquees", "businesses"
-  add_foreign_key "playlist_media", "media", column: "media_id"
-  add_foreign_key "playlist_media", "playlists"
-  add_foreign_key "playlists", "qrs"
-  add_foreign_key "playlists", "slides"
+  add_foreign_key "media", "users", column: "owner_id"
   add_foreign_key "qrs", "businesses"
+  add_foreign_key "slide_media", "media", column: "audio_media_id"
   add_foreign_key "slide_media", "media", column: "media_id"
+  add_foreign_key "slide_media", "qrs"
   add_foreign_key "slide_media", "slides"
   add_foreign_key "slides", "businesses"
 end

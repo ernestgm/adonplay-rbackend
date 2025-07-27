@@ -9,8 +9,9 @@ class SlideSerializer
       name: @slide.name,
       description: @slide.description,
       description_position: @slide.description_position,
-      text_size: @slide.text_size,
+      description_size: @slide.description_size,
       business_id: @slide.business_id,
+      business: @slide.business ? BusinessSerializer.new(@slide.business).as_json : nil,
       created_at: @slide.created_at,
       updated_at: @slide.updated_at
     }

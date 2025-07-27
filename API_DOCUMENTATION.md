@@ -371,6 +371,608 @@ If multiple fields have errors, they will all be included in the response:
 }
 ```
 
+## Media Management
+
+The API provides endpoints for managing media (images, videos, audio) and associating them with slides.
+
+### Media
+
+#### Get All Media
+
+```
+GET /api/v1/media
+```
+
+**Headers:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+```
+
+**Query Parameters:**
+
+```
+media_type=image  # Filter by media type (image, video, audio)
+```
+
+**Response:**
+
+```json
+[
+  {
+    "id": 1,
+    "media_type": "image",
+    "file_path": "/uploads/images/abc123_image.jpg",
+    "owner_id": 1,
+    "owner": {
+      "id": 1,
+      "name": "John Doe",
+      "email": "user@example.com",
+      "role": "owner",
+      "phone": "1234567890",
+      "enabled": true,
+      "created_at": "2025-07-26T02:01:00.000Z",
+      "updated_at": "2025-07-26T02:01:00.000Z"
+    },
+    "business_id": 1,
+    "business": {
+      "id": 1,
+      "name": "Test Business",
+      "description": "A test business",
+      "owner_id": 1,
+      "created_at": "2025-07-26T02:01:00.000Z",
+      "updated_at": "2025-07-26T02:01:00.000Z"
+    },
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  }
+]
+```
+
+#### Get Media
+
+```
+GET /api/v1/media/:id
+```
+
+**Headers:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+```
+
+**Response:**
+
+```json
+{
+  "id": 1,
+  "media_type": "image",
+  "file_path": "/uploads/images/abc123_image.jpg",
+  "owner_id": 1,
+  "owner": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "user@example.com",
+    "role": "owner",
+    "phone": "1234567890",
+    "enabled": true,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "business_id": 1,
+  "business": {
+    "id": 1,
+    "name": "Test Business",
+    "description": "A test business",
+    "owner_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "created_at": "2025-07-26T02:01:00.000Z",
+  "updated_at": "2025-07-26T02:01:00.000Z"
+}
+```
+
+#### Create Media
+
+```
+POST /api/v1/media
+```
+
+**Headers:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+Content-Type: multipart/form-data
+```
+
+**Form Data:**
+
+```
+media_type: image
+file: [file upload]
+owner_id: 1 (optional, defaults to current user)
+business_id: 1
+```
+
+**Response:**
+
+```json
+{
+  "id": 1,
+  "media_type": "image",
+  "file_path": "/uploads/images/abc123_image.jpg",
+  "owner_id": 1,
+  "owner": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "user@example.com",
+    "role": "owner",
+    "phone": "1234567890",
+    "enabled": true,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "business_id": 1,
+  "business": {
+    "id": 1,
+    "name": "Test Business",
+    "description": "A test business",
+    "owner_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "created_at": "2025-07-26T02:01:00.000Z",
+  "updated_at": "2025-07-26T02:01:00.000Z"
+}
+```
+
+#### Update Media
+
+```
+PUT /api/v1/media/:id
+```
+
+**Headers:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+Content-Type: multipart/form-data
+```
+
+**Form Data:**
+
+```
+media_type: image
+file: [file upload]
+owner_id: 1
+business_id: 1
+```
+
+**Response:**
+
+```json
+{
+  "id": 1,
+  "media_type": "image",
+  "file_path": "/uploads/images/def456_image.jpg",
+  "owner_id": 1,
+  "owner": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "user@example.com",
+    "role": "owner",
+    "phone": "1234567890",
+    "enabled": true,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "business_id": 1,
+  "business": {
+    "id": 1,
+    "name": "Test Business",
+    "description": "A test business",
+    "owner_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "created_at": "2025-07-26T02:01:00.000Z",
+  "updated_at": "2025-07-26T02:01:00.000Z"
+}
+```
+
+#### Delete Media
+
+```
+DELETE /api/v1/media/:id
+```
+
+**Headers:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+```
+
+**Response:**
+
+```json
+{
+  "message": "Media deleted successfully"
+}
+```
+
+#### Bulk Delete Media
+
+```
+DELETE /api/v1/media
+```
+
+**Headers:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+Content-Type: application/json
+```
+
+**Request Body:**
+
+```json
+{
+  "ids": [1, 2, 3]
+}
+```
+
+**Response:**
+
+```json
+{
+  "message": "3 media deleted successfully",
+  "deleted_count": 3
+}
+```
+
+### Slide Media
+
+#### Get All Media for a Slide
+
+```
+GET /api/v1/slides/:slide_id/media
+```
+
+**Headers:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+```
+
+**Response:**
+
+```json
+[
+  {
+    "id": 1,
+    "slide_id": 1,
+    "slide": {
+      "id": 1,
+      "name": "Test Slide",
+      "business_id": 1,
+      "created_at": "2025-07-26T02:01:00.000Z",
+      "updated_at": "2025-07-26T02:01:00.000Z"
+    },
+    "media_id": 1,
+    "media": {
+      "id": 1,
+      "media_type": "image",
+      "file_path": "/uploads/images/abc123_image.jpg",
+      "owner_id": 1,
+      "business_id": 1,
+      "created_at": "2025-07-26T02:01:00.000Z",
+      "updated_at": "2025-07-26T02:01:00.000Z"
+    },
+    "order": 0,
+    "duration": 5,
+    "audio_media_id": 2,
+    "audio_media": {
+      "id": 2,
+      "media_type": "audio",
+      "file_path": "/uploads/audios/abc123_audio.mp3",
+      "owner_id": 1,
+      "business_id": 1,
+      "created_at": "2025-07-26T02:01:00.000Z",
+      "updated_at": "2025-07-26T02:01:00.000Z"
+    },
+    "qr_id": 1,
+    "qr": {
+      "id": 1,
+      "name": "Test QR",
+      "info": "QR Info",
+      "position": "center",
+      "business_id": 1,
+      "created_at": "2025-07-26T02:01:00.000Z",
+      "updated_at": "2025-07-26T02:01:00.000Z"
+    },
+    "description": "Image with audio and QR",
+    "text_size": "medium",
+    "description_position": "bottom",
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  }
+]
+```
+
+#### Get Slide Media
+
+```
+GET /api/v1/slide_media/:id
+```
+
+**Headers:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+```
+
+**Response:**
+
+```json
+{
+  "id": 1,
+  "slide_id": 1,
+  "slide": {
+    "id": 1,
+    "name": "Test Slide",
+    "business_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "media_id": 1,
+  "media": {
+    "id": 1,
+    "media_type": "image",
+    "file_path": "/uploads/images/abc123_image.jpg",
+    "owner_id": 1,
+    "business_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "order": 0,
+  "duration": 5,
+  "audio_media_id": 2,
+  "audio_media": {
+    "id": 2,
+    "media_type": "audio",
+    "file_path": "/uploads/audios/abc123_audio.mp3",
+    "owner_id": 1,
+    "business_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "qr_id": 1,
+  "qr": {
+    "id": 1,
+    "name": "Test QR",
+    "info": "QR Info",
+    "position": "center",
+    "business_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "description": "Image with audio and QR",
+  "text_size": "medium",
+  "description_position": "bottom",
+  "created_at": "2025-07-26T02:01:00.000Z",
+  "updated_at": "2025-07-26T02:01:00.000Z"
+}
+```
+
+#### Create Slide Media
+
+```
+POST /api/v1/slide_media
+```
+
+**Headers:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+Content-Type: application/json
+```
+
+**Request Body:**
+
+```json
+{
+  "slide_id": 1,
+  "media_id": 1,
+  "order": 0,
+  "duration": 10,
+  "audio_media_id": 2,
+  "qr_id": 1,
+  "description": "Image with audio and QR",
+  "text_size": "medium",
+  "description_position": "bottom"
+}
+```
+
+**Response:**
+
+```json
+{
+  "id": 1,
+  "slide_id": 1,
+  "slide": {
+    "id": 1,
+    "name": "Test Slide",
+    "business_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "media_id": 1,
+  "media": {
+    "id": 1,
+    "media_type": "image",
+    "file_path": "/uploads/images/abc123_image.jpg",
+    "owner_id": 1,
+    "business_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "order": 0,
+  "duration": 10,
+  "audio_media_id": 2,
+  "audio_media": {
+    "id": 2,
+    "media_type": "audio",
+    "file_path": "/uploads/audios/abc123_audio.mp3",
+    "owner_id": 1,
+    "business_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "qr_id": 1,
+  "qr": {
+    "id": 1,
+    "name": "Test QR",
+    "info": "QR Info",
+    "position": "center",
+    "business_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "description": "Image with audio and QR",
+  "text_size": "medium",
+  "description_position": "bottom",
+  "created_at": "2025-07-26T02:01:00.000Z",
+  "updated_at": "2025-07-26T02:01:00.000Z"
+}
+```
+
+#### Update Slide Media
+
+```
+PUT /api/v1/slide_media/:id
+```
+
+**Headers:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+Content-Type: application/json
+```
+
+**Request Body:**
+
+```json
+{
+  "duration": 20,
+  "description": "Updated description",
+  "text_size": "small",
+  "description_position": "center"
+}
+```
+
+**Response:**
+
+```json
+{
+  "id": 1,
+  "slide_id": 1,
+  "slide": {
+    "id": 1,
+    "name": "Test Slide",
+    "business_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "media_id": 1,
+  "media": {
+    "id": 1,
+    "media_type": "image",
+    "file_path": "/uploads/images/abc123_image.jpg",
+    "owner_id": 1,
+    "business_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "order": 0,
+  "duration": 20,
+  "audio_media_id": 2,
+  "audio_media": {
+    "id": 2,
+    "media_type": "audio",
+    "file_path": "/uploads/audios/abc123_audio.mp3",
+    "owner_id": 1,
+    "business_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "qr_id": 1,
+  "qr": {
+    "id": 1,
+    "name": "Test QR",
+    "info": "QR Info",
+    "position": "center",
+    "business_id": 1,
+    "created_at": "2025-07-26T02:01:00.000Z",
+    "updated_at": "2025-07-26T02:01:00.000Z"
+  },
+  "description": "Updated description",
+  "text_size": "small",
+  "description_position": "center",
+  "created_at": "2025-07-26T02:01:00.000Z",
+  "updated_at": "2025-07-26T02:01:00.000Z"
+}
+```
+
+#### Delete Slide Media
+
+```
+DELETE /api/v1/slide_media/:id
+```
+
+**Headers:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+```
+
+**Response:**
+
+```json
+{
+  "message": "Slide media deleted successfully"
+}
+```
+
+#### Reorder Media in a Slide
+
+```
+POST /api/v1/slides/:slide_id/media/reorder
+```
+
+**Headers:**
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+Content-Type: application/json
+```
+
+**Request Body:**
+
+```json
+{
+  "order": [3, 2, 1]
+}
+```
+
+**Response:**
+
+```json
+{
+  "message": "Media reordered successfully"
+}
+```
+
 ## Notes
 
 - The token received from the login endpoint should be included in the Authorization header for all protected endpoints.
@@ -381,3 +983,6 @@ If multiple fields have errors, they will all be included in the response:
 - Users cannot delete their own account, regardless of their role.
 - The bulk delete endpoint allows admins to delete multiple users at once and automatically excludes the current user from deletion.
 - When updating a user, you can omit the password and password_confirmation fields if you don't want to change the password.
+- Media ownership is determined by owner_id, business_id, or association with slides/playlists that belong to businesses owned by the user.
+- Audio can only be associated with image media.
+- Media within a slide is ordered by the order field.

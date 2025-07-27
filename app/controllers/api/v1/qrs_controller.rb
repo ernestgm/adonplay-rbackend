@@ -6,8 +6,8 @@ module Api
       include ErrorFormatter
       
       before_action :authenticate_request
-      before_action :set_qr, only: [:show, :update, :destroy]
-      before_action -> { entity_owner_or_admin_only!(@qr) }, only: [:show, :update, :destroy]
+      before_action :set_qr, only: [:show, :update]
+      before_action -> { entity_owner_or_admin_only!(@qr) }, only: [:show, :update]
       before_action :verify_business_ownership, only: [:create, :update]
       
       # GET /api/v1/qrs
@@ -43,11 +43,7 @@ module Api
       
       # DELETE /api/v1/qrs
       def destroy
-        if params[:id]
-          # Single QR deletion
-          @qr.destroy
-          render json: { message: 'QR deleted successfully' }, status: :ok
-        elsif params[:ids].present?
+        if params[:ids].present?
           # Bulk QR deletion
           qr_ids = params[:ids].map(&:to_i)
           

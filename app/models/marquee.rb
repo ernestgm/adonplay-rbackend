@@ -8,7 +8,8 @@ class Marquee < ApplicationRecord
   validates :message, presence: true
   validates :background_color, presence: true
   validates :text_color, presence: true
-  
+  validates :business_id, presence: true
+
   # Custom validation messages
   def messages
     {

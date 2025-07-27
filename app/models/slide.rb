@@ -1,7 +1,6 @@
 class Slide < ApplicationRecord
   # Associations
   belongs_to :business
-  has_many :playlists, dependent: :destroy
   has_many :slide_medias, dependent: :destroy
   has_many :medias, through: :slide_medias
 
@@ -10,7 +9,7 @@ class Slide < ApplicationRecord
   validates :business_id, presence: true
   validates :description, presence: false
   validates :description_position, presence: false
-  validates :text_size, presence: false
+  validates :description_size, presence: false
 
   # Custom validation messages
   def messages

@@ -6,8 +6,8 @@ module Api
       include ErrorFormatter
       
       before_action :authenticate_request
-      before_action :set_slide, only: [:show, :update, :destroy]
-      before_action -> { entity_owner_or_admin_only!(@slide) }, only: [:show, :update, :destroy]
+      before_action :set_slide, only: [:show, :update]
+      before_action -> { entity_owner_or_admin_only!(@slide) }, only: [:show, :update]
       before_action :verify_business_ownership, only: [:create, :update]
       
       # GET /api/v1/slides
@@ -43,11 +43,7 @@ module Api
       
       # DELETE /api/v1/slides
       def destroy
-        if params[:id]
-          # Single slide deletion
-          @slide.destroy
-          render json: { message: 'Slide deleted successfully' }, status: :ok
-        elsif params[:ids].present?
+        if params[:ids].present?
           # Bulk slide deletion
           slide_ids = params[:ids].map(&:to_i)
           
@@ -75,7 +71,7 @@ module Api
       
       def slide_params
         # Support direct JSON format without nesting
-        params.permit(:name, :business_id)
+        params.permit(:name, :description, :description_size, :description_position,  :business_id)
       end
       
       def verify_business_ownership
