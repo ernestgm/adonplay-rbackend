@@ -12,6 +12,8 @@ module Api
       before_action :verify_media_ownership, only: [:create, :update]
       before_action :verify_audio_media_ownership, only: [:create, :update]
       before_action :verify_qr_ownership, only: [:create, :update]
+
+      ENVIRONMENT = Rails.application.config.local_storage[:environment]
       
       # GET /api/v1/slides/:slide_id/media
       def index
@@ -49,6 +51,59 @@ module Api
         else
           # Otherwise, set order to the last order + 1
           @slide_media.order = last_order + 1
+        end
+
+        if params[:file].present?
+          file = params[:file]
+          filename = "#{SecureRandom.uuid}_#{file.original_filename}"
+
+          @slide = Slide.find(params[:slide_id])
+          @business = @slide.business
+          owner_id = @business.owner_id
+
+          media_type = FileClassifier.classify(file.original_filename)
+          media = Media.new(media_type: media_type, owner_id: owner_id)
+
+          # Generate a unique filename
+
+
+          # Create a temporary file
+          temp_file_path = Rails.root.join('tmp', filename)
+          File.open(temp_file_path, 'wb') do |f|
+            f.write(file.read)
+          end
+
+          # Define the remote path for SFTP
+          remote_path = "#{ENVIRONMENT}/medias/user_#{owner_id}/#{media_type.pluralize}/#{filename}"
+
+          # Upload the file to local storage
+          begin
+            LocalStorageHelper.upload_file(temp_file_path, remote_path)
+
+            # Set the file path in the media record
+            media.file_path = remote_path
+
+            # Save the media record
+            if media.save
+              @slide_media.media_id = media.id
+            else
+              # Clean up temporary file
+              File.delete(temp_file_path) if File.exist?(temp_file_path)
+              # Return error
+              render json: { errors: format_errors(media) }, status: :unprocessable_entity
+              return
+            end
+          rescue => e
+            # Clean up temporary file
+            File.delete(temp_file_path) if File.exist?(temp_file_path)
+
+            # Return error
+            render json: { error: "Failed to upload file: #{e.message}" }, status: :internal_server_error
+            return
+          ensure
+            # Clean up temporary file
+            File.delete(temp_file_path) if File.exist?(temp_file_path)
+          end
         end
 
         if @slide_media.save
