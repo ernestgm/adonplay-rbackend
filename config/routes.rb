@@ -28,6 +28,8 @@ Rails.application.routes.draw do
       
       # Media routes
       resources :media, only: [:index, :show, :create, :update]
+      get '/media_excepted/:slide_id', to: 'media#index_excepted'
+      get '/all_audio_excepted/:slide_id', to: 'media#all_audio_excepted'
       delete '/media', to: 'media#destroy' # Bulk delete media
       
       # Slide Media routes

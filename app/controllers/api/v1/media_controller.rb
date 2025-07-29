@@ -28,12 +28,59 @@ module Api
         
         render json: @media.map { |media| MediaSerializer.new(media).as_json }, status: :ok
       end
-      
+
+      # GET /api/v1/medias_excepted/:slide_id
+      def index_excepted
+        specific_slide_id = params[:slide_id] # O de donde obtengas el ID del slide
+
+        if current_user.role == 'admin'
+          media_ids_already_used_by_slide = SlideMedia.where(slide_id: specific_slide_id).pluck(:media_id).uniq
+          @media = Media
+                     .where.not(media_type: "audio")
+                     .where.not(id: media_ids_already_used_by_slide)
+        else
+          media_ids_already_used_by_slide = SlideMedia.where(slide_id: specific_slide_id).pluck(:media_id).uniq
+          @media = Media.where(owner_id: current_user.id)
+                        .where.not(media_type: "audio")
+                        .where.not(id: media_ids_already_used_by_slide)
+        end
+
+        # Filter by media type if provided
+        if params[:media_type].present?
+          @media = @media.where(media_type: params[:media_type])
+        end
+
+        render json: @media.map { |media| MediaSerializer.new(media).as_json }, status: :ok
+      end
+
+      # GET /api/v1/all_audio_excepted/:slide_id
+      def all_audio_excepted
+        specific_slide_id = params[:slide_id] # O de donde obtengas el ID del slide
+        media_ids_already_used_by_slide = SlideMedia.where(slide_id: specific_slide_id).pluck(:audio_media_id).uniq
+
+        if current_user.role == 'admin'
+          @media = Media
+                     .where(media_type: "audio")
+                     .where.not(id: media_ids_already_used_by_slide)
+        else
+          @media = Media.where(owner_id: current_user.id)
+                        .where(media_type: "audio")
+                        .where.not(id: media_ids_already_used_by_slide)
+        end
+
+        # Filter by media type if provided
+        if params[:media_type].present?
+          @media = @media.where(media_type: params[:media_type])
+        end
+
+        render json: @media.map { |media| MediaSerializer.new(media).as_json }, status: :ok
+      end
+
       # GET /api/v1/media/1
       def show
         render json: MediaSerializer.new(@media).as_json, status: :ok
       end
-      
+
       # POST /api/v1/media
       def create
         # Get media type from params
