@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       
       # Authentication routes
       post '/login', to: 'authentication#login'
+      post '/login_device', to: 'authentication#login_device'
       delete '/logout', to: 'authentication#logout'
       
       # Entity routes

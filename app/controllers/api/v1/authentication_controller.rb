@@ -13,6 +13,19 @@ module Api
         end
       end
 
+      # POST /api/v1/login_device
+      def login_device
+        @device = Device.find_by(device_id: params[:device_id])
+        @user = @device.user if @device
+
+        if @user
+          token = JsonWebToken.encode(user_id: @user.id)
+          render json: { token: token, user: UserSerializer.new(@user).as_json }, status: :ok
+        else
+          render json: { error: 'Invalid email or password' }, status: :unauthorized
+        end
+      end
+
       # DELETE /api/v1/logout
       def logout
         # In a JWT-based authentication system, the token is typically invalidated on the client side

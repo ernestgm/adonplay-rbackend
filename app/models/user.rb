@@ -3,6 +3,7 @@ class User < ApplicationRecord
   has_secure_password
 
   # Associations
+  has_many :devices, foreign_key: 'users_id', dependent: :nullify
   has_many :businesses, foreign_key: 'owner_id', dependent: :destroy
 
   # Validations

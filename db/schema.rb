@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_27_010000) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_30_072110) do
   create_table "businesses", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description", null: false
@@ -28,10 +28,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_27_010000) do
     t.bigint "slide_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "users_id"
     t.index ["device_id"], name: "index_devices_on_device_id", unique: true
     t.index ["marquee_id"], name: "index_devices_on_marquee_id"
     t.index ["qr_id"], name: "index_devices_on_qr_id"
     t.index ["slide_id"], name: "index_devices_on_slide_id"
+    t.index ["users_id"], name: "index_devices_on_users_id"
   end
 
   create_table "marquees", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -112,6 +114,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_27_010000) do
   add_foreign_key "devices", "marquees"
   add_foreign_key "devices", "qrs"
   add_foreign_key "devices", "slides"
+  add_foreign_key "devices", "users", column: "users_id"
   add_foreign_key "marquees", "businesses"
   add_foreign_key "media", "users", column: "owner_id"
   add_foreign_key "qrs", "businesses"

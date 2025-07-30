@@ -3,6 +3,7 @@ class Device < ApplicationRecord
   belongs_to :qr, optional: true
   belongs_to :marquee, optional: true
   belongs_to :slide, optional: true
+  belongs_to :users, class_name: 'User', optional: true
 
   # Validations
   validates :name, presence: true
