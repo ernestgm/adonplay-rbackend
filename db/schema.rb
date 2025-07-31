@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_30_072110) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_31_065120) do
   create_table "businesses", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description", null: false
@@ -34,6 +34,26 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_30_072110) do
     t.index ["qr_id"], name: "index_devices_on_qr_id"
     t.index ["slide_id"], name: "index_devices_on_slide_id"
     t.index ["users_id"], name: "index_devices_on_users_id"
+  end
+
+  create_table "devices_verify_codes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "device_id", null: false
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_devices_verify_codes_on_code", unique: true
+    t.index ["device_id"], name: "index_devices_verify_codes_on_device_id"
+  end
+
+  create_table "login_codes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "device_id", null: false
+    t.string "code", null: false
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_login_codes_on_code", unique: true
+    t.index ["device_id"], name: "index_login_codes_on_device_id"
+    t.index ["user_id"], name: "index_login_codes_on_user_id"
   end
 
   create_table "marquees", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -115,6 +135,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_30_072110) do
   add_foreign_key "devices", "qrs"
   add_foreign_key "devices", "slides"
   add_foreign_key "devices", "users", column: "users_id"
+  add_foreign_key "login_codes", "users"
   add_foreign_key "marquees", "businesses"
   add_foreign_key "media", "users", column: "owner_id"
   add_foreign_key "qrs", "businesses"

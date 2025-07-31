@@ -15,6 +15,7 @@ Rails.application.routes.draw do
       # Authentication routes
       post '/login', to: 'authentication#login'
       post '/login_device', to: 'authentication#login_device'
+      post '/activate_device', to: 'authentication#activate_device'
       delete '/logout', to: 'authentication#logout'
       
       # Entity routes
@@ -47,6 +48,9 @@ Rails.application.routes.draw do
       
       resources :qrs, only: [:index, :show, :create, :update]
       delete '/qrs', to: 'qrs#destroy' # Bulk delete QRs
+
+      resources :devices_verify_codes, only: [:create]
+      post '/create_login_code', to: 'devices_verify_codes#create_login_code'
     end
   end
 
