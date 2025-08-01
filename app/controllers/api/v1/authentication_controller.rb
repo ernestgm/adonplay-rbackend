@@ -4,8 +4,10 @@ module Api
       include Authenticable
       include ErrorFormatter
 
-      before_action :authenticate_request, only: [:activate_device]
+      before_action :authenticate_request, only: [:activate_device, :logout]
       before_action :set_login_code, only: [:activate_device]
+      before_action :set_login_device_code, only: [:login_device]
+
       # POST /api/v1/login
       def login
         @user = User.find_by(email: params[:email])
@@ -46,13 +48,38 @@ module Api
 
       # POST /api/v1/login_device
       def login_device
-        @user = User.find_by(email: params[:email])
+        return render json: { error: 'Invalid User' }, status: :unauthorized unless @user_login_code
 
-        if @user&.authenticate(params[:password])
-          token = JsonWebToken.encode(user_id: @user.id)
+        @user = User.find(@user_login_code.user_id)
+
+        if @user
+          @device = Device.find_by(device_id: @user_login_code.device_id)
+
+          if @device.nil?
+            @device = Device.new(
+              name: @user_login_code.device_id,
+              users_id: @user_login_code.user_id,
+              device_id: @user_login_code.device_id,
+            )
+
+            return render json: { error: format_errors(@device) }, status: :unprocessable_entity unless @device.save
+          else
+            if @device.users_id != @user.id
+              return render json: { error: format_errors(@device) }, status: :unprocessable_entity unless @device.update(
+                users_id: @user_login_code.user_id,
+                qr_id: nil,
+                marquee_id: nil,
+                slide_id: nil
+              )
+            end
+          end
+
+          return render json: { error: format_errors(@user_login_code) }, status: :unprocessable_entity unless @user_login_code.delete
+
+          token = JsonWebToken.encode(user_id: @user.id, exp: 0)
           render json: { token: token, user: UserSerializer.new(@user).as_json }, status: :ok
         else
-          render json: { error: 'Invalid email or password' }, status: :unauthorized
+          render json: { error: 'Invalid Authentication User' }, status: :unauthorized
         end
       end
 
@@ -70,6 +97,10 @@ module Api
 
       def set_login_code
         @login_code = LoginCode.find_by(code: params[:code], device_id: params[:device_id])
+      end
+
+      def set_login_device_code
+        @user_login_code = LoginCode.find_by(code: params[:code], device_id: params[:device_id], user_id: params[:user_id])
       end
     end
   end

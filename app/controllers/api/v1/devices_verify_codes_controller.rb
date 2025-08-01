@@ -7,6 +7,7 @@ module Api
       before_action :verify_request, only: [:create_login_code]
       before_action -> { check_device_id!(params[:device_id]) }, only: [:create]
       before_action -> { check_valid_player!(params[:device_id], params[:code]) }, only: [:create_login_code]
+      before_action :set_login_code, only: [:create_login_code]
 
       # POST /api/v1/device_verify_code
       def create
@@ -15,6 +16,7 @@ module Api
         @device_verify_code = DevicesVerifyCodes.find_by(device_id: params[:device_id])
         if @device_verify_code != nil
           render json: { device: DeviceVerifyCodeSerializer.new(@device_verify_code).as_json,  token: token }, status: :created
+          return
         end
 
         permit_params = device_params
@@ -31,13 +33,19 @@ module Api
 
       # POST /api/v1/create_login_code
       def create_login_code
+
+        if @login_code != nil
+          render json: LoginCodeSerializer.new(@login_code).as_json , status: :created
+          return
+        end
+
         code = rand(100_000..999_999)
         permit_params = device_player_params
         permit_params[:code] = code
 
         @login_code = LoginCode.new(permit_params)
         if @login_code.save
-          render json: DeviceVerifyCodeSerializer.new(@login_code).as_json , status: :created
+          render json: LoginCodeSerializer.new(@login_code).as_json , status: :created
         else
           render json: { errors: format_errors(@login_code) }, status: :unprocessable_entity
         end
@@ -55,6 +63,10 @@ module Api
       def device_player_params
         # Support direct JSON format without nesting
         params.permit(:device_id, :code)
+      end
+
+      def set_login_code
+        @login_code = LoginCode.find_by(device_id: params[:device_id])
       end
     end
   end

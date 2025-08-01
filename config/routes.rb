@@ -16,7 +16,7 @@ Rails.application.routes.draw do
       post '/login', to: 'authentication#login'
       post '/login_device', to: 'authentication#login_device'
       post '/activate_device', to: 'authentication#activate_device'
-      delete '/logout', to: 'authentication#logout'
+      post '/logout', to: 'authentication#logout'
       
       # Entity routes
       resources :businesses, only: [:index, :show, :create, :update]

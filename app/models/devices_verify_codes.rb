@@ -3,7 +3,4 @@ class DevicesVerifyCodes < ApplicationRecord
   validates :code, presence: true
   validates :device_id, presence: true, uniqueness: true
 
-  def ==
-    # code here
-  end
 end
