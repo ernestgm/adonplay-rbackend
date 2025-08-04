@@ -2,7 +2,8 @@ class JsonWebToken
   SECRET_KEY = Rails.application.credentials.secret_key_base
 
   def self.encode(payload, exp = 24.hours.from_now)
-    if exp != 0
+    # Si exp es exactamente 0 o nil, no agregamos la expiración
+    unless exp.nil? || exp == 0
       payload[:exp] = exp.to_i
     end
 

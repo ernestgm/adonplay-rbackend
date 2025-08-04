@@ -13,7 +13,7 @@ module Api
         @user = User.find_by(email: params[:email])
         
         if @user&.authenticate(params[:password])
-          token = JsonWebToken.encode(user_id: @user.id)
+          token = JsonWebToken.encode({user_id: @user.id})
           render json: { token: token, user: UserSerializer.new(@user).as_json }, status: :ok
         else
           render json: { error: 'Invalid email or password' }, status: :unauthorized
@@ -40,6 +40,22 @@ module Api
         permitted[:user_id] = user_id
 
         if @login_code.update(permitted)
+          target_device_id = @login_code.device_id # Obtén el app_id de la aplicación a la que quieres enviar la acción
+          action_data = {
+            type: "ejecute_login", # Tipo de acción para que el cliente la interprete
+            payload: {
+              user_id: user_id,
+              device_id: @login_code.device_id,
+              code: @login_code.code
+            }
+          }
+
+          # Envía la acción al stream de esa aplicación específica
+          LoginActionsChannel.broadcast_to(
+            target_device_id, # El identificador de la aplicación
+            action_data
+          )
+
           render json: LoginCodeSerializer.new(@login_code).as_json, status: :ok
         else
           render json: { error: format_errors(@login_code) }, status: :unprocessable_entity
@@ -76,7 +92,7 @@ module Api
 
           return render json: { error: format_errors(@user_login_code) }, status: :unprocessable_entity unless @user_login_code.delete
 
-          token = JsonWebToken.encode(user_id: @user.id, exp: 0)
+          token = JsonWebToken.encode({user_id: @user.id}, nil)
           render json: { token: token, user: UserSerializer.new(@user).as_json }, status: :ok
         else
           render json: { error: 'Invalid Authentication User' }, status: :unauthorized
@@ -92,7 +108,7 @@ module Api
 
       def login_code_params
         # Aquí lista solo los parámetros que pueden cambiarse, excepto user_id
-        params.permit(:code, :device_id)
+        params.permit(:code, :device_id, :user_id)
       end
 
       def set_login_code

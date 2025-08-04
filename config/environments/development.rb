@@ -36,7 +36,7 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
 
   # Set localhost to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  config.action_mailer.default_url_options = { host: "localhost", port: 9000 }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
@@ -71,5 +71,16 @@ Rails.application.configure do
     config.hosts << "api-adonplay.local"
     config.hosts << "localhost" # Ensure localhost is also allowed if you use it directly
     config.hosts << IPAddr.new("172.16.0.0/12") # Allow requests from Docker internal network range
+
+  config.hosts << "ws-adonplay.local"
+  config.action_cable.allowed_request_origins = [
+    'http://localhost:3001', # Your frontend
+    'http://localhost:3000', # Your Rails app itself
+    'http://api-adonplay.local', # Your Rails app itself
+    'http://player-adonplay.local', # Your Rails app itself
+    'http://frontend-adonplay.local', # Your Rails app itself
+    /http:\/\/localhost:\d+/, # Regex for any localhost port (less secure, but quick for dev)
+    nil # Allows requests with no Origin header (e.g., some internal Docker calls, older clients, Postman)
+  ]
 
 end

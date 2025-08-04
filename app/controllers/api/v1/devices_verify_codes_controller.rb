@@ -11,7 +11,7 @@ module Api
 
       # POST /api/v1/device_verify_code
       def create
-        token = JsonWebToken.encode(device_id: device_params[:device_id], exp: 0)
+        token = JsonWebToken.encode({device_id: device_params[:device_id]}, nil)
 
         @device_verify_code = DevicesVerifyCodes.find_by(device_id: params[:device_id])
         if @device_verify_code != nil
