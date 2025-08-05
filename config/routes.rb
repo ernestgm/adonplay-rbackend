@@ -23,8 +23,9 @@ Rails.application.routes.draw do
       delete '/businesses', to: 'businesses#destroy' # Bulk delete businesses
       
       resources :devices, only: [:index, :show, :create, :update]
+      get '/show_by_device_id/:device_id', to: 'devices#show_by_device_id' # Bulk delete devices
       delete '/devices', to: 'devices#destroy' # Bulk delete devices
-      
+
       resources :marquees, only: [:index, :show, :create, :update]
       delete '/marquees', to: 'marquees#destroy' # Bulk delete marquees
       

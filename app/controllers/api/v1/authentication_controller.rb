@@ -56,7 +56,7 @@ module Api
             action_data
           )
 
-          render json: LoginCodeSerializer.new(@login_code).as_json, status: :ok
+          render json: {login_code: LoginCodeSerializer.new(@login_code).as_json, message: "Device Activated"}, status: :ok
         else
           render json: { error: format_errors(@login_code) }, status: :unprocessable_entity
         end
@@ -101,8 +101,21 @@ module Api
 
       # DELETE /api/v1/logout
       def logout
-        # In a JWT-based authentication system, the token is typically invalidated on the client side
-        # Here we just return a success message
+        target_device_id = '1cf892da6a0d9e8f' # Obtén el app_id de la aplicación a la que quieres enviar la acción
+        action_data = {
+          type: "change_user", # Tipo de acción para que el cliente la interprete
+          payload: {
+            user_id: 7,
+            device_id: target_device_id,
+          }
+        }
+
+        # Envía la acción al stream de esa aplicación específica
+        ChangeUserActionsChannel.broadcast_to(
+          target_device_id, # El identificador de la aplicación
+          action_data
+        )
+
         render json: { message: 'Logged out successfully' }, status: :ok
       end
 
@@ -112,7 +125,7 @@ module Api
       end
 
       def set_login_code
-        @login_code = LoginCode.find_by(code: params[:code], device_id: params[:device_id])
+        @login_code = LoginCode.find_by(code: params[:code])
       end
 
       def set_login_device_code

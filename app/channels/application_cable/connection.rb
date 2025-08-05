@@ -15,7 +15,7 @@ module ApplicationCable
       # Tu lógica para verificar y obtener el app_id
       # Puede venir de un parámetro URL al establecer la conexión WebSocket
       # Ejemplo: ws://localhost:3000/cable?app_id=tu_app_id_unico
-      if request.params[:device_id].present? && Device.find_by(device_id: request.params[:device_id]) # Asegúrate de que tu modelo App exista
+      if request.params[:device_id].present? && DevicesVerifyCodes.find_by(device_id: request.params[:device_id]) # Asegúrate de que tu modelo App exista
         request.params[:device_id]
       else
         nil # O maneja el error de otra manera

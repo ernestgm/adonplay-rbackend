@@ -9,7 +9,8 @@ module Api
       before_action :set_device, only: [:show, :update, :destroy]
       before_action :verify_device_ownership, only: [:show, :update, :destroy]
       before_action :verify_associations_ownership, only: [:create, :update]
-      
+      before_action :set_device_by_id_and_user, only: [:show_by_device_id]
+
       # GET /api/v1/devices
       def index
         if current_user.role == 'admin'
@@ -31,6 +32,10 @@ module Api
       def show
         render json: DeviceSerializer.new(@device).as_json, status: :ok
       end
+
+      def show_by_device_id
+        render json: DeviceSerializer.new(@device).as_json, status: :ok
+      end
       
       # POST /api/v1/devices
       def create
@@ -46,7 +51,29 @@ module Api
       # PATCH/PUT /api/v1/devices/1
       def update
         if @device.update(device_params)
-          render json: DeviceSerializer.new(@device).as_json, status: :ok
+          cambios = @device.saved_changes
+          Rails.logger.info "Campos actualizados: #{cambios.keys}"
+
+          type = ""
+          if @device.saved_changes.key?("slide_id")
+            puts "El campo 'slide_id' fue actualizado"
+            type = "ejecute_slide_change"
+          end
+
+          target_device_id = @device.device_id # Obtén el app_id de la aplicación a la que quieres enviar la acción
+          action_data = {
+            type: type, # Tipo de acción para que el cliente la interprete
+            payload: {
+              device: DeviceSerializer.new(@device)
+            }
+          }
+          # Envía la acción al stream de esa aplicación específica
+          ChangeDevicesActionsChannel.broadcast_to(
+            target_device_id, # El identificador de la aplicación
+            action_data
+          )
+
+          render json: {data: DeviceSerializer.new(@device).as_json, msg: "Campos actualizados: #{type}"}, status: :ok
         else
           render json: { errors: format_errors(@device) }, status: :unprocessable_entity
         end
@@ -93,11 +120,17 @@ module Api
         @device = Device.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         render json: { error: 'Device not found' }, status: :not_found
+        end
+
+      def set_device_by_id_and_user
+        @device = Device.find_by(device_id: params[:device_id], users_id: current_user.id)
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: 'Device not found' }, status: :not_found
       end
       
       def device_params
         # Support direct JSON format without nesting
-        params.permit(:name, :device_id, :qr_id, :marquee_id, :slide_id)
+        params.permit(:name, :qr_id, :marquee_id, :slide_id, :users_id)
       end
       
       def verify_device_ownership
