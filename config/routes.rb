@@ -27,6 +27,7 @@ Rails.application.routes.draw do
       delete '/devices', to: 'devices#destroy' # Bulk delete devices
 
       resources :marquees, only: [:index, :show, :create, :update]
+      get '/marquees_by_user/:user_id', to: 'marquees#index_by_user' # Bulk delete slides
       delete '/marquees', to: 'marquees#destroy' # Bulk delete marquees
       
       # Media routes
@@ -44,10 +45,12 @@ Rails.application.routes.draw do
         resources :media, only: [:index], controller: 'slide_media'
         post '/media/reorder', to: 'slide_media#reorder'
       end
+      get '/slides_by_user/:user_id', to: 'slides#index_by_user' # Bulk delete slides
       delete '/slides', to: 'slides#destroy' # Bulk delete slides
-      
+
       
       resources :qrs, only: [:index, :show, :create, :update]
+      get '/qrs_by_user/:user_id', to: 'qrs#index_by_user' # Bulk delete slides
       delete '/qrs', to: 'qrs#destroy' # Bulk delete QRs
 
       resources :devices_verify_codes, only: [:create]

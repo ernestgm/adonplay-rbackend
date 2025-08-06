@@ -16,6 +16,8 @@ class DeviceSerializer
       slide: @device.slide ? SlideSerializer.new(@device.slide).as_json : nil,
       users_id: @device.users_id,
       user: @device.users ? UserSerializer.new(@device.users).as_json : nil,
+      portrait: @device.portrait,
+      as_presentation: @device.as_presentation,
       created_at: @device.created_at,
       updated_at: @device.updated_at
     }

@@ -38,6 +38,10 @@ module Authorizable
     end
   end
 
+  def scope_by_owner(relation, owner_id)
+    relation.joins(:business).where(businesses: { owner_id: owner_id })
+  end
+
   # Scope businesses to those owned by the current user (if owner) or all (if admin)
   def scope_businesses_to_owner(relation)
     if current_user.role == 'admin'

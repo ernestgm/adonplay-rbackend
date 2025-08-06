@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_31_065120) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_06_052207) do
   create_table "businesses", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description", null: false
@@ -29,6 +29,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_065120) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "users_id"
+    t.boolean "portrait", default: false
+    t.boolean "as_presentation", default: false
     t.index ["device_id"], name: "index_devices_on_device_id", unique: true
     t.index ["marquee_id"], name: "index_devices_on_marquee_id"
     t.index ["qr_id"], name: "index_devices_on_qr_id"

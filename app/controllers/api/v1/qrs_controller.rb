@@ -15,6 +15,12 @@ module Api
         @qrs = scope_to_owner(Qr)
         render json: @qrs.map { |qr| QrSerializer.new(qr).as_json }, status: :ok
       end
+
+      # GET /api/v1/qrs_by_user
+      def index_by_user
+        @qrs = scope_by_owner(Qr, params[:user_id])
+        render json: @qrs.map { |qr| QrSerializer.new(qr).as_json }, status: :ok
+      end
       
       # GET /api/v1/qrs/1
       def show

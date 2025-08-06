@@ -15,6 +15,12 @@ module Api
         @slides = scope_to_owner(Slide)
         render json: @slides.map { |slide| SlideSerializer.new(slide).as_json }, status: :ok
       end
+
+      # GET /api/v1/slides_by_user
+      def index_by_user
+        @slides = scope_by_owner(Slide, params[:user_id])
+        render json: @slides.map { |slide| SlideSerializer.new(slide).as_json }, status: :ok
+      end
       
       # GET /api/v1/slides/1
       def show

@@ -15,6 +15,12 @@ module Api
         @marquees = scope_to_owner(Marquee)
         render json: @marquees.map { |marquee| MarqueeSerializer.new(marquee).as_json }, status: :ok
       end
+
+      # GET /api/v1/marquees_by_user
+      def index_by_user
+        @marquees = scope_by_owner(Marquee, params[:user_id])
+        render json: @marquees.map { |marquee| MarqueeSerializer.new(marquee).as_json }, status: :ok
+      end
       
       # GET /api/v1/marquees/1
       def show

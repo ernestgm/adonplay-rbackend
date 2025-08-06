@@ -130,7 +130,7 @@ module Api
       
       def device_params
         # Support direct JSON format without nesting
-        params.permit(:name, :qr_id, :marquee_id, :slide_id, :users_id)
+        params.permit(:name, :qr_id, :marquee_id, :slide_id, :users_id, :as_presentation, :portrait)
       end
       
       def verify_device_ownership
