@@ -10,7 +10,9 @@ module Api
 
       # POST /api/v1/login
       def login
-        @user = User.find_by(email: params[:email])
+        @user = User.find_by(email: params[:email], enabled: true)
+
+        return render json: { error: 'User Disabled' }, status: :unauthorized unless @user
         
         if @user&.authenticate(params[:password])
           token = JsonWebToken.encode({user_id: @user.id})
@@ -22,7 +24,7 @@ module Api
 
       # POST /api/v1/activate_device
       def activate_device
-        return render json: { error: 'Invalid Code' }, status: :unauthorized unless @login_code
+        return render json: { error: 'Invalid Code' }, status: :forbidden unless @login_code
 
         @user = current_user
 

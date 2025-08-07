@@ -72,6 +72,7 @@ Rails.application.configure do
     config.hosts << "localhost" # Ensure localhost is also allowed if you use it directly
     config.hosts << IPAddr.new("172.16.0.0/12") # Allow requests from Docker internal network range
 
+  config.hosts << "player-adonplay.local"
   config.hosts << "ws-adonplay.local"
   config.action_cable.allowed_request_origins = [
     'http://localhost:3001', # Your frontend
