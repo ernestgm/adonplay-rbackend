@@ -12,6 +12,7 @@ module Api
       before_action :verify_media_ownership, only: [:create, :update]
       before_action :verify_audio_media_ownership, only: [:create, :update]
       before_action :verify_qr_ownership, only: [:create, :update]
+      after_action :notify_changes, only: [:create, :update]
 
       ENVIRONMENT = Rails.application.config.local_storage[:environment]
       
@@ -287,7 +288,22 @@ module Api
           # Scope to QRs owned by current user if not admin
           slides_medias = scope_to_owner(SlideMedia.where(id: slide_medias_ids))
 
+          affected_device_ids = slides_medias.includes(slide: :devices).flat_map { |sm| sm.slide.devices.pluck(:id) }.uniq
           deleted_count = slides_medias.destroy_all.count
+
+          affected_device_ids.each do |device_id|
+            action_data = {
+              type: "ejecute_data_change", # Tipo de acción para que el cliente la interprete
+              payload: {
+                updated_at: slide_medias_ids,
+                msg: "Slide Media Notify Changes"
+              }
+            }
+            ChangeDevicesActionsChannel.broadcast_to(
+              device_id, # El identificador de la aplicación
+              action_data
+            )
+          end
 
           render json: {
             message: "#{deleted_count} Items deleted successfully",
@@ -335,7 +351,24 @@ module Api
       end
       
       private
-      
+
+      def notify_changes
+        return unless @slide_media&.persisted?
+
+        @slide_media.slide.devices.each do |device|
+          action_data = {
+            type: "ejecute_data_change", # Tipo de acción para que el cliente la interprete
+            payload: {
+              updated_at: @slide_media.updated_at,
+              msg: "Slide Media Notify Changes"
+            }
+          }
+          ChangeDevicesActionsChannel.broadcast_to(
+            device.device_id, # El identificador de la aplicación
+            action_data
+          )
+        end
+      end
       def set_slide_media
         @slide_media = SlideMedia.find(params[:id])
       rescue ActiveRecord::RecordNotFound

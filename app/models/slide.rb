@@ -1,6 +1,7 @@
 class Slide < ApplicationRecord
   # Associations
   belongs_to :business
+  has_many :devices, foreign_key: 'slide_id', dependent: :nullify
   has_many :slide_medias, dependent: :destroy
   has_many :medias, through: :slide_medias
 

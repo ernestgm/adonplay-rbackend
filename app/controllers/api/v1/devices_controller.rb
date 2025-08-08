@@ -10,6 +10,7 @@ module Api
       before_action :verify_device_ownership, only: [:show, :update, :destroy]
       before_action :verify_associations_ownership, only: [:create, :update]
       before_action :set_device_by_id_and_user, only: [:show_by_device_id]
+      after_action :notify_changes, only: [:update]
 
       # GET /api/v1/devices
       def index
@@ -115,7 +116,24 @@ module Api
       end
       
       private
-      
+
+      def notify_changes
+        return unless @device&.persisted?
+
+        action_data = {
+          type: "ejecute_data_change", # Tipo de acción para que el cliente la interprete
+          payload: {
+            updated_at: @device.updated_at,
+            msg: "Slide Media Notify Changes"
+          }
+        }
+
+        ChangeDevicesActionsChannel.broadcast_to(
+          @device.device_id, # El identificador de la aplicación
+          action_data
+        )
+      end
+
       def set_device
         @device = Device.find(params[:id])
       rescue ActiveRecord::RecordNotFound

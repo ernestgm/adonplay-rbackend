@@ -9,6 +9,7 @@ module Api
       before_action :set_marquee, only: [:show, :update]
       before_action -> { entity_owner_or_admin_only!(@marquee) }, only: [:show, :update]
       before_action :verify_business_ownership, only: [:create, :update]
+      after_action :notify_changes, only: [:update]
       
       # GET /api/v1/marquees
       def index
@@ -68,7 +69,25 @@ module Api
       end
       
       private
-      
+
+      def notify_changes
+        return unless @marquee&.persisted?
+
+        @marquee.devices.each do |device|
+          action_data = {
+            type: "ejecute_data_change", # Tipo de acción para que el cliente la interprete
+            payload: {
+              updated_at: @marquee.updated_at,
+              msg: "Slide Media Notify Changes"
+            }
+          }
+          ChangeDevicesActionsChannel.broadcast_to(
+            device.device_id, # El identificador de la aplicación
+            action_data
+          )
+        end
+      end
+
       def set_marquee
         @marquee = Marquee.find(params[:id])
       rescue ActiveRecord::RecordNotFound
