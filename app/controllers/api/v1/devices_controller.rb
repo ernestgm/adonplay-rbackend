@@ -6,7 +6,7 @@ module Api
       include ErrorFormatter
       
       before_action :authenticate_request
-      before_action :set_device, only: [:show, :update, :destroy]
+      before_action :set_device, only: [:show, :update]
       before_action :verify_device_ownership, only: [:show, :update, :destroy]
       before_action :verify_associations_ownership, only: [:create, :update]
       before_action :set_device_by_id_and_user, only: [:show_by_device_id]
@@ -82,11 +82,7 @@ module Api
       
       # DELETE /api/v1/devices
       def destroy
-        if params[:id]
-          # Single device deletion
-          @device.destroy
-          render json: { message: 'Device deleted successfully' }, status: :ok
-        elsif params[:ids].present?
+        if params[:ids].present?
           # Bulk device deletion
           device_ids = params[:ids].map(&:to_i)
           
@@ -103,7 +99,20 @@ module Api
                                   current_user.id, current_user.id, current_user.id)
                            .distinct
           end
-          
+
+          devices.each do |device|
+            action_data = {
+              type: "user_logout_action", # Tipo de acción para que el cliente la interprete
+              payload: {
+                msg: "Device Deleted"
+              }
+            }
+            ChangeUserActionsChannel.broadcast_to(
+              device.device_id, # El identificador de la aplicación
+              action_data
+            )
+          end
+
           deleted_count = devices.destroy_all.count
           
           render json: { 

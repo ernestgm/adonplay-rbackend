@@ -2,6 +2,7 @@ class Qr < ApplicationRecord
   # Associations
   belongs_to :business
   has_many :devices, dependent: :nullify
+  has_many :slide_medias, foreign_key: 'qr_id', dependent: :nullify
 
   # Validations
   validates :name, presence: true

@@ -56,7 +56,11 @@ module Api
           
           # Scope to marquees owned by current user if not admin
           marquees = scope_to_owner(Marquee.where(id: marquee_ids))
-          
+
+          marquees.each do |marquee|
+            self.broadcast_notify_change(marquee)
+          end
+
           deleted_count = marquees.destroy_all.count
           
           render json: { 
@@ -69,15 +73,12 @@ module Api
       end
       
       private
-
-      def notify_changes
-        return unless @marquee&.persisted?
-
-        @marquee.devices.each do |device|
+      def broadcast_notify_change(marquee)
+        marquee.devices.each do |device|
           action_data = {
             type: "ejecute_data_change", # Tipo de acción para que el cliente la interprete
             payload: {
-              updated_at: @marquee.updated_at,
+              updated_at: marquee.updated_at,
               msg: "Slide Media Notify Changes"
             }
           }
@@ -86,6 +87,10 @@ module Api
             action_data
           )
         end
+      end
+      def notify_changes
+        return unless @marquee&.persisted?
+        self.broadcast_notify_change(@marquee)
       end
 
       def set_marquee

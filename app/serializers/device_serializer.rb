@@ -14,7 +14,7 @@ class DeviceSerializer
       marquee: @device.marquee ? MarqueeSerializer.new(@device.marquee).as_json : nil,
       slide_id: @device.slide_id,
       slide: @device.slide ? SlideSerializer.new(@device.slide).as_json : nil,
-      slide_medias: @device.slide.slide_medias.map { |slide_media| SlideMediaSerializer.new(slide_media).as_json },
+      slide_medias: @device.slide ? @device.slide.slide_medias.map { |slide_media| SlideMediaSerializer.new(slide_media).as_json } : nil,
       users_id: @device.users_id,
       user: @device.users ? UserSerializer.new(@device.users).as_json : nil,
       portrait: @device.portrait,

@@ -9,6 +9,7 @@ module Api
       before_action :set_qr, only: [:show, :update]
       before_action -> { entity_owner_or_admin_only!(@qr) }, only: [:show, :update]
       before_action :verify_business_ownership, only: [:create, :update]
+      after_action :notify_changes, only: [:update]
       
       # GET /api/v1/qrs
       def index
@@ -55,6 +56,10 @@ module Api
           
           # Scope to QRs owned by current user if not admin
           qrs = scope_to_owner(Qr.where(id: qr_ids))
+
+          qrs.each do |qr|
+            self.broadcast_notify_change(qr)
+          end
           
           deleted_count = qrs.destroy_all.count
           
@@ -68,7 +73,32 @@ module Api
       end
       
       private
-      
+      def broadcast_notify_change(qr)
+        on_devices = @qr.devices.pluck(:device_id)
+        on_slide_medias = Device
+                            .joins(slide: :slide_medias)
+                            .where(slide_medias: { qr_id: qr.id })
+                            .pluck(:device_id)
+        all_devices = (on_devices + on_slide_medias).uniq
+
+        all_devices.each do |device_id|
+          action_data = {
+            type: "ejecute_data_change", # Tipo de acción para que el cliente la interprete
+            payload: {
+              updated_at: qr.updated_at,
+              msg: "Slide Media Notify Changes"
+            }
+          }
+          ChangeDevicesActionsChannel.broadcast_to(
+            device_id, # El identificador de la aplicación
+            action_data
+          )
+        end
+      end
+      def notify_changes
+        return unless @qr&.persisted?
+        self.broadcast_notify_change(@qr)
+      end
       def set_qr
         @qr = Qr.find(params[:id])
       rescue ActiveRecord::RecordNotFound
