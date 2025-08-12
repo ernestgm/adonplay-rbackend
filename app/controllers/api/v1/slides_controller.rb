@@ -9,6 +9,7 @@ module Api
       before_action :set_slide, only: [:show, :update]
       before_action -> { entity_owner_or_admin_only!(@slide) }, only: [:show, :update]
       before_action :verify_business_ownership, only: [:create, :update]
+      after_action :notify_changes, only: [:update]
       
       # GET /api/v1/slides
       def index
@@ -55,7 +56,11 @@ module Api
           
           # Scope to slides owned by current user if not admin
           slides = scope_to_owner(Slide.where(id: slide_ids))
-          
+
+          slides.each do |slide|
+            self.broadcast_notify_change(slide)
+          end
+
           deleted_count = slides.destroy_all.count
           
           render json: { 
@@ -68,7 +73,27 @@ module Api
       end
       
       private
-      
+
+      def broadcast_notify_change(slide)
+        slide.devices.each do |device|
+          action_data = {
+            type: "ejecute_data_change", # Tipo de acción para que el cliente la interprete
+            payload: {
+              updated_at: slide.updated_at,
+              msg: "Slide Media Notify Changes"
+            }
+          }
+          ChangeDevicesActionsChannel.broadcast_to(
+            device.device_id, # El identificador de la aplicación
+            action_data
+          )
+        end
+      end
+      def notify_changes
+        return unless @slide&.persisted?
+        self.broadcast_notify_change(@slide)
+      end
+
       def set_slide
         @slide = Slide.find(params[:id])
       rescue ActiveRecord::RecordNotFound

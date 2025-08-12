@@ -8,6 +8,7 @@ module Api
       before_action :authenticate_request
       before_action :set_media, only: [:show, :update]
       before_action :verify_media_ownership, only: [:show, :update]
+      after_action :notify_changes, only: [:update]
 
       # Get the environment (desa or prod)
       ENVIRONMENT = Rails.application.config.local_storage[:environment]
@@ -300,15 +301,15 @@ module Api
 
           # Scope to media owned by current user if not admin
           if current_user.role == 'admin'
-            media = Media.where(id: media_ids)
+            medias = Media.where(id: media_ids)
           else
             # Get media owned by the current user
-            media = Media.where(id: media_ids)
+            medias = Media.where(id: media_ids)
                          .where(owner_id: current_user.id)
           end
 
           # Delete files from local storage for each media
-          media.each do |m|
+          medias.each do |m|
             if m.file_path.present?
               begin
                 LocalStorageHelper.delete_file(m.file_path)
@@ -319,7 +320,11 @@ module Api
             end
           end
 
-          deleted_count = media.destroy_all.count
+          medias.each do |media|
+            self.broadcast_notify_change(media)
+          end
+
+          deleted_count = medias.destroy_all.count
 
           render json: {
             message: "#{deleted_count} media deleted successfully",
@@ -331,6 +336,38 @@ module Api
       end
 
       private
+
+      def broadcast_notify_change(media)
+        if media.media_type == 'audio'
+          on_slide_medias = Device
+                              .joins(slide: :slide_medias)
+                              .where(slide_medias: { audio_media_id: media.id })
+                              .pluck(:device_id).uniq
+        else
+          on_slide_medias = Device
+                              .joins(slide: :slide_medias)
+                              .where(slide_medias: { media_id: media.id })
+                              .pluck(:device_id).uniq
+        end
+
+        on_slide_medias.each do |device_id|
+          action_data = {
+            type: "ejecute_data_change", # Tipo de acción para que el cliente la interprete
+            payload: {
+              updated_at: device_id,
+              msg: "Slide Media Notify Changes"
+            }
+          }
+          ChangeDevicesActionsChannel.broadcast_to(
+            device_id, # El identificador de la aplicación
+            action_data
+          )
+        end
+      end
+      def notify_changes
+        return unless @media&.persisted?
+        self.broadcast_notify_change(@media)
+      end
 
       def set_media
         @media = Media.find(params[:id])

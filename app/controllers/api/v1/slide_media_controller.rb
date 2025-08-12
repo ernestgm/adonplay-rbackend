@@ -288,7 +288,10 @@ module Api
           # Scope to QRs owned by current user if not admin
           slides_medias = scope_to_owner(SlideMedia.where(id: slide_medias_ids))
 
-          affected_device_ids = slides_medias.includes(slide: :devices).flat_map { |sm| sm.slide.devices.pluck(:id) }.uniq
+          affected_device_ids = slides_medias.includes(:slide => :devices)
+                                             .flat_map { |sm| sm.slide.devices.pluck(:device_id) }
+                                             .uniq
+
           deleted_count = slides_medias.destroy_all.count
 
           affected_device_ids.each do |device_id|
