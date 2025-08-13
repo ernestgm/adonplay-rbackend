@@ -52,16 +52,30 @@ module Api
       # PATCH/PUT /api/v1/devices/1
       def update
         if @device.update(device_params)
-          cambios = @device.saved_changes
-          Rails.logger.info "Campos actualizados: #{cambios.keys}"
+
+          target_device_id = @device.device_id
+
+          if @device.saved_changes.key?("users_id")
+            action_data = {
+              type: "change_user", # Tipo de acción para que el cliente la interprete
+              payload: {
+                device: DeviceSerializer.new(@device)
+              }
+            }
+            ChangeUserActionsChannel.broadcast_to(
+              target_device_id, # El identificador de la aplicación
+              action_data
+            )
+            render json: {data: DeviceSerializer.new(@device).as_json, msg: "User Update"}, status: :ok
+            return
+          end
 
           type = ""
           if @device.saved_changes.key?("slide_id")
-            puts "El campo 'slide_id' fue actualizado"
             type = "ejecute_slide_change"
           end
 
-          target_device_id = @device.device_id # Obtén el app_id de la aplicación a la que quieres enviar la acción
+           # Obtén el app_id de la aplicación a la que quieres enviar la acción
           action_data = {
             type: type, # Tipo de acción para que el cliente la interprete
             payload: {

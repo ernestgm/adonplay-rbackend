@@ -38,19 +38,21 @@ module Api
           if @user.saved_changes.key?("enabled")
             unless @user.enabled
               @device = Device.find_by(users_id: @user.id)
-              type = "user_logout_action"
-              target_device_id = @device.device_id # Obtén el app_id de la aplicación a la que quieres enviar la acción
-              action_data = {
-                type: type, # Tipo de acción para que el cliente la interprete
-                payload: {
-                  device: DeviceSerializer.new(@device)
+              if @device != nil
+                type = "user_logout_action"
+                target_device_id = @device.device_id # Obtén el app_id de la aplicación a la que quieres enviar la acción
+                action_data = {
+                  type: type, # Tipo de acción para que el cliente la interprete
+                  payload: {
+                    device: DeviceSerializer.new(@device)
+                  }
                 }
-              }
-              # Envía la acción al stream de esa aplicación específica
-              ChangeUserActionsChannel.broadcast_to(
-                target_device_id, # El identificador de la aplicación
-                action_data
-              )
+                # Envía la acción al stream de esa aplicación específica
+                ChangeUserActionsChannel.broadcast_to(
+                  target_device_id, # El identificador de la aplicación
+                  action_data
+                )
+              end
             end
           end
 

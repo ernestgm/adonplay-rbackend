@@ -34,6 +34,17 @@ module Api
       # POST /api/v1/create_login_code
       def create_login_code
 
+        @device_verify_code = DevicesVerifyCodes.find_by(device_id: params[:device_id])
+        if @device_verify_code != nil
+          @device = Device.find_by(device_id: params[:device_id])
+          if @device != nil && @device.users != nil && @device.users.enabled
+            @user = @device.users
+            token = JsonWebToken.encode({user_id: @user.id}, nil)
+            render json: { token: token, user: UserSerializer.new(@user).as_json }, status: :ok
+            return
+          end
+        end
+
         if @login_code != nil
           render json: LoginCodeSerializer.new(@login_code).as_json , status: :created
           return
