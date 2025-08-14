@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_06_052207) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_14_040715) do
   create_table "businesses", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description", null: false
@@ -43,6 +43,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_06_052207) do
     t.string "code", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "registered", default: false
     t.index ["code"], name: "index_devices_verify_codes_on_code", unique: true
     t.index ["device_id"], name: "index_devices_verify_codes_on_device_id"
   end

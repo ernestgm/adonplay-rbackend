@@ -53,7 +53,7 @@ Rails.application.routes.draw do
       get '/qrs_by_user/:user_id', to: 'qrs#index_by_user' # Bulk delete slides
       delete '/qrs', to: 'qrs#destroy' # Bulk delete QRs
 
-      resources :devices_verify_codes, only: [:create]
+      resources :devices_verify_codes, only: [:index, :update, :create]
       post '/create_login_code', to: 'devices_verify_codes#create_login_code'
     end
   end

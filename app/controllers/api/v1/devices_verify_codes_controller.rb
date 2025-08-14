@@ -1,21 +1,34 @@
 module Api
   module V1
     class DevicesVerifyCodesController < ApplicationController
+      include Authenticable
       include Deniable
       include ErrorFormatter
 
+      before_action :authenticate_request, only: [ :index, :update ]
       before_action :verify_request, only: [:create_login_code]
       before_action -> { check_device_id!(params[:device_id]) }, only: [:create]
       before_action -> { check_valid_player!(params[:device_id], params[:code]) }, only: [:create_login_code]
-      before_action :set_login_code, only: [:create_login_code]
+      before_action :set_login_code, only: [:create_login_code, :update]
+
+      def index
+        if current_user.role == 'admin'
+          @devices_verify_codes = DevicesVerifyCodes.all
+        end
+
+        render json: @devices_verify_codes.map { |device| DeviceVerifyCodeSerializer.new(device).as_json }, status: :ok
+      end
 
       # POST /api/v1/device_verify_code
       def create
-        token = JsonWebToken.encode({device_id: device_params[:device_id]}, nil)
-
         @device_verify_code = DevicesVerifyCodes.find_by(device_id: params[:device_id])
         if @device_verify_code != nil
-          render json: { device: DeviceVerifyCodeSerializer.new(@device_verify_code).as_json,  token: token }, status: :created
+          if @device_verify_code.registered
+            token = JsonWebToken.encode({device_id: device_params[:device_id]}, nil)
+            render json: { device: DeviceVerifyCodeSerializer.new(@device_verify_code).as_json,  token: token }, status: :ok
+          else
+            render json: { device: DeviceVerifyCodeSerializer.new(@device_verify_code).as_json }, status: :ok
+          end
           return
         end
 
@@ -25,15 +38,23 @@ module Api
         @device_verify_code = DevicesVerifyCodes.new(permit_params)
         
         if @device_verify_code.save
-          render json: { device: DeviceVerifyCodeSerializer.new(@device_verify_code).as_json,  token: token }, status: :created
+          render json: { device: DeviceVerifyCodeSerializer.new(@device_verify_code).as_json }, status: :created
         else
           render json: { errors: format_errors(@device_verify_code) }, status: :unprocessable_entity
         end
       end
 
+      def update
+        @device_verify_code = DevicesVerifyCodes.find(params[:id])
+        if @device_verify_code.update(:registered => params[:registered])
+          render json: { message: "Persmission Updated" }, status: :ok
+        else
+          render json: { errors: format_errors(@device) }, status: :unprocessable_entity
+        end
+      end
+
       # POST /api/v1/create_login_code
       def create_login_code
-
         @device_verify_code = DevicesVerifyCodes.find_by(device_id: params[:device_id])
         if @device_verify_code != nil
           @device = Device.find_by(device_id: params[:device_id])
