@@ -143,6 +143,8 @@ module Api
       def notify_changes
         return unless @device&.persisted?
 
+        return if @device.saved_changes.key?("users_id")
+
         action_data = {
           type: "ejecute_data_change", # Tipo de acción para que el cliente la interprete
           payload: {
