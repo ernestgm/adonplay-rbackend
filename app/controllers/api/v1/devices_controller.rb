@@ -75,11 +75,15 @@ module Api
             type = "ejecute_slide_change"
           end
 
-           # Obtén el app_id de la aplicación a la que quieres enviar la acción
+          if @device.saved_changes.key?("portrait")
+            type = "ejecute_portrait_change"
+          end
+
+          # Obtén el app_id de la aplicación a la que quieres enviar la acción
           action_data = {
             type: type, # Tipo de acción para que el cliente la interprete
             payload: {
-              device: DeviceSerializer.new(@device)
+              portrait: @device.portrait
             }
           }
           # Envía la acción al stream de esa aplicación específica

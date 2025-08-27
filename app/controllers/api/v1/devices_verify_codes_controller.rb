@@ -24,8 +24,16 @@ module Api
         @device_verify_code = DevicesVerifyCodes.find_by(device_id: params[:device_id])
         if @device_verify_code != nil
           if @device_verify_code.registered
+            @device = Device.find_by(device_id: params[:device_id])
+
+            if @device != nil
+              is_portrait = @device.portrait
+            else
+              is_portrait = false
+            end
+
             token = JsonWebToken.encode({device_id: device_params[:device_id]}, nil)
-            render json: { device: DeviceVerifyCodeSerializer.new(@device_verify_code).as_json,  token: token }, status: :ok
+            render json: { device: DeviceVerifyCodeSerializer.new(@device_verify_code).as_json,  token: token, portrait: is_portrait }, status: :ok
           else
             render json: { device: DeviceVerifyCodeSerializer.new(@device_verify_code).as_json }, status: :ok
           end
