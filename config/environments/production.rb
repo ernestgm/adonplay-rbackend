@@ -77,10 +77,23 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
+  config.hosts = [
+    "localhost",
+    "127.0.0.1",
+    IPAddr.new("172.16.0.0/12"),
+    "geniusdevelops.com",     # Allow requests from example.com
+    /.*\.geniusdevelops\.com/ # Allow requests from subdomains like `www.example.com`
+  ]
+
+  config.action_cable.allowed_request_origins = [
+    /.*\.geniusdevelops\.com/,
+    'http://10.0.2.2:3001',
+    'http://api-adonplay.local', # Your Rails app itself
+    'http://player-adonplay.local', # Your Rails app itself
+    'http://frontend-adonplay.local', # Your Rails app itself
+    /http:\/\/localhost:\d+/, # Regex for any localhost port (less secure, but quick for dev)
+    nil # Allows requests with no Origin header (e.g., some internal Docker calls, older clients, Postman)
+  ]
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
