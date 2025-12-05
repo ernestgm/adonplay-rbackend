@@ -22,7 +22,7 @@ rm -f /app/tmp/pids/server.pid
 
 # Ejecuta las migraciones de la base de datos
 echo "Running database migrations..."
-bundle exec rails db:migrate
+bundle exec rails db:migrate RAILS_ENV=production
 
 # Ejecuta el comando principal del contenedor
 echo "Starting application..."
