@@ -46,7 +46,7 @@ RUN rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 COPY Gemfile Gemfile.lock ./
 
 # Instala las gems usando Bundler.
-RUN bundle install --jobs $(nproc) --without development test
+RUN bundle install --jobs $(nproc)
 
 # Copia el resto de tu aplicación.
 COPY . .
@@ -55,6 +55,7 @@ COPY entrypoint.sh .
 RUN chmod +x ./entrypoint.sh
 
 # Usa el script de entrada
+RUN sed -i 's/\r$//' ./entrypoint.sh
 ENTRYPOINT ["sh", "./entrypoint.sh"]
 EXPOSE 9000
 
