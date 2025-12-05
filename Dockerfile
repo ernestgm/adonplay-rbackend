@@ -55,6 +55,7 @@ COPY entrypoint.sh .
 RUN chmod +x ./entrypoint.sh
 
 # Usa el script de entrada
+RUN sed -i 's/\r$//' ./entrypoint.sh
 ENTRYPOINT ["sh", "./entrypoint.sh"]
 EXPOSE 9000
 
