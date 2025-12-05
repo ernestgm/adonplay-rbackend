@@ -8,11 +8,12 @@ WORKDIR /app
 # Por ejemplo, para nokogiri, pg (PostgreSQL), etc.
 # Si tu aplicación usa otras bases de datos como MySQL, necesitarás añadir libmysqlclient-dev.
 
+ENV DEBIAN_FRONTEND=noninteractive
 # Install base packages
-RUN apt-get update -qq && apt-get upgrade && \
-    apt-get install --no-install-recommends -y curl default-mysql-client libjemalloc2 libvips && \
-    apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git libyaml-dev pkg-config && \
-    apt-get install -y build-essential libpq-dev nodejs npm yarn && \
+RUN apt update -qq && apt upgrade -y && \
+    apt install --no-install-recommends -y curl default-mysql-client libjemalloc2 libvips && \
+    apt install --no-install-recommends -y build-essential default-libmysqlclient-dev git libyaml-dev pkg-config && \
+    apt install -y build-essential libpq-dev nodejs npm yarn && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copia el Gemfile y Gemfile.lock primero para aprovechar el cache de Docker.
