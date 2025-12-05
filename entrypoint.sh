@@ -3,7 +3,7 @@ set -e # Salir inmediatamente si un comando falla
 
 # Variables de entorno para MySQL (asegúrate de que coincidan con tu docker-compose.yml o tus variables de entorno)
 MYSQL_HOST=${DB_HOST:-mysql} # Por defecto 'db' si usas docker-compose
-MYSQL_USER=${DB_USER:-adonplay}
+MYSQL_USER=${DB_USERNAME:-adonplay}
 MYSQL_PASSWORD=${DB_PASSWORD:-secret} # ¡Cambia esto por tu contraseña real!
 MYSQL_DATABASE=${DB_DATABASE:-adonplay_api_db} # Nombre de tu base de datos
 
