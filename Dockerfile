@@ -46,7 +46,7 @@ RUN rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 COPY Gemfile Gemfile.lock ./
 
 # Instala las gems usando Bundler.
-RUN bundle install --jobs $(nproc) --without development test
+RUN bundle install --jobs $(nproc)
 
 # Copia el resto de tu aplicación.
 COPY . .
