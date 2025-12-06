@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sitio en Construcción</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <style>
+      :root {
+          /* Definición de la paleta de colores */
+          --color-bg: #141E30; /* Azul muy oscuro para el fondo */
+          --color-card-bg: #1F2A38; /* Azul oscuro para la tarjeta */
+          --color-primary: #FF9900; /* Naranja/Amarillo para el énfasis */
+          --color-text: #E0E0E0; /* Gris claro para el texto */
+      }
+
+      body {
+          font-family: 'Roboto', sans-serif;
+          background-color: var(--color-bg);
+          color: var(--color-text);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          margin: 0;
+          text-align: center;
+      }
+
+      .container {
+          max-width: 90%;
+          width: 450px;
+          padding: 40px 20px;
+          border-radius: 15px;
+          background-color: var(--color-card-bg);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Sombra oscura */
+      }
+
+      /* Estilos para el icono (casco y herramientas) */
+      .icon-wrapper {
+          width: 120px;
+          height: 120px;
+          margin: 0 auto 30px;
+          background-color: var(--color-bg); /* Fondo más oscuro para el círculo */
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.05); /* Anillo sutil */
+      }
+
+      .icon-wrapper .fas {
+          font-size: 55px;
+          color: var(--color-primary);
+      }
+
+      /* Simulación del casco y las herramientas */
+      .helmet-icon::before {
+          content: "\f0a2"; /* Código de Font Awesome para el casco (hard hat) */
+          color: #FFC300; /* Color amarillo para el casco */
+          display: block;
+          font-family: "Font Awesome 6 Free";
+          font-weight: 900;
+          font-size: 60px;
+      }
+
+      .tools-icon {
+          position: absolute;
+          font-size: 30px !important;
+          color: #9E9E9E; /* Gris oscuro para las herramientas */
+          margin-top: 30px;
+      }
+
+      .tools-icon::before {
+          content: "\f0ad \f013"; /* Código de Font Awesome para llave inglesa y engranaje */
+          margin-left: -5px;
+      }
+
+      /* --- Títulos y Mensajes --- */
+      h1 {
+          color: var(--color-primary);
+          font-size: 2.5em;
+          font-weight: 700;
+          margin: 0;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+      }
+
+      h2 {
+          font-size: 2.5em;
+          color: var(--color-primary);
+          margin-top: 5px;
+          margin-bottom: 20px;
+          font-weight: 700;
+          letter-spacing: 1px;
+      }
+
+      p {
+          font-size: 1.1em;
+          color: var(--color-text);
+          line-height: 1.6;
+          margin-bottom: 30px;
+          font-weight: 300;
+      }
+
+      /* Botón de Notificación */
+      .btn {
+          background-color: var(--color-primary);
+          color: var(--color-card-bg);
+          border: none;
+          padding: 12px 25px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 1em;
+          font-weight: 700;
+          transition: background-color 0.3s ease;
+          text-decoration: none;
+          display: inline-block;
+      }
+
+      .btn:hover {
+          background-color: #FFB347; /* Tono más claro al pasar el ratón */
+      }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="icon-wrapper">
+    <div class="helmet-icon"></div>
+    <div class="tools-icon"></div>
+  </div>
+
+  <h1>UNDER</h1>
+  <h2>CONSTRUCTION</h2>
+
+  <p>
+    Estamos trabajando arduamente para mejorar nuestro sitio.
+    ¡Vuelve a visitarnos pronto!
+  </p>
+
+  <a href="#" class="btn" role="button">
+    Notificarme de las actualizaciones
+  </a>
+</div>
+
+</body>
+</html>
