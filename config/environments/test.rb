@@ -62,6 +62,8 @@ Rails.application.configure do
 
   config.action_cable.allowed_request_origins = [
     /.*\.geniusdevelops\.com/,
+    "http://frontend-adonplay.geniusdevelops.com/",
+    "http://player-adonplay.geniusdevelops.com/",
     'http://10.0.2.2:3001',
     'http://api-adonplay.local', # Your Rails app itself
     'http://player-adonplay.local', # Your Rails app itself
