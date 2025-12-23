@@ -9,6 +9,8 @@ WORKDIR /app
 # Si tu aplicación usa otras bases de datos como MySQL, necesitarás añadir libmysqlclient-dev.
 
 ENV DEBIAN_FRONTEND=noninteractive
+
+RUN echo 'Acquire::ForceIPv4 "true";' > /etc/apt/apt.conf.d/99force-ipv4
 # Install base packages
 RUN apt update -qq && apt upgrade -y && \
     apt install --no-install-recommends -y curl default-mysql-client libjemalloc2 libvips && \
