@@ -47,7 +47,8 @@ COPY . .
 
 # 8. Preparación del entrypoint.
 COPY entrypoint.sh .
-RUN chmod +x ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh && \
+    sed -i 's/\r$//' ./entrypoint.sh
 
 # 9. Configuración final.
 ENTRYPOINT ["./entrypoint.sh"]
