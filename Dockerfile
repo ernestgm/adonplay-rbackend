@@ -9,6 +9,8 @@ WORKDIR /app
 # Combinamos los pasos en un solo RUN para reducir capas y limpiamos al final.
 ENV DEBIAN_FRONTEND=noninteractive
 
+RUN echo 'Acquire::ForceIPv4 "true";' > /etc/apt/apt.conf.d/99force-ipv4
+
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     build-essential \
