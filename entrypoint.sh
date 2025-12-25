@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -e # Salir inmediatamente si un comando falla
 
 # mariadb-admin ping -h adonplay-db -u adonplay -psecret

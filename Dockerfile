@@ -48,12 +48,14 @@ RUN bundle install --jobs "$(nproc)" && \
 COPY . .
 
 # 8. Preparación del entrypoint.
-COPY entrypoint.sh .
-RUN chmod +x ./entrypoint.sh && \
-    sed -i 's/\r$//' ./entrypoint.sh
+COPY entrypoint.sh /usr/bin/
+RUN sed -i 's/\r$//' /usr/bin/entrypoint.sh && \
+    chmod +x /usr/bin/entrypoint.sh
+
+# Usa la ruta absoluta para evitar errores de "No such file"
+ENTRYPOINT ["/usr/bin/entrypoint.sh"]
 
 # 9. Configuración final.
-ENTRYPOINT ["./entrypoint.sh"]
 EXPOSE 9000
 
 # Comando para iniciar Rails.
