@@ -13,7 +13,6 @@ class StatusActionsChannel < ApplicationCable::Channel
     # Enviar lista inicial solo a este cliente
     transmit({ devices: $redis.smembers(group_key) })
     stream_from group_key
-    # stream_for @device_id
   end
 
   def unsubscribed
@@ -22,6 +21,11 @@ class StatusActionsChannel < ApplicationCable::Channel
       $redis.srem(redis_key, device_id)
       broadcast_devices
     end
+  end
+
+  def receive(data)
+    # Reenviamos lo que recibimos a todos los suscritos (incluyendo React)
+    ActionCable.server.broadcast(redis_key, data)
   end
 
   private
