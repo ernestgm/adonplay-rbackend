@@ -57,3 +57,8 @@ production:
     <<: *production_primary
     # Si quieres una base de datos separada para las colas, cambia el nombre aquí:
     # database: <%= ENV["DB_NAME"] %>_queue
+
+  cache:
+    <<: *production_primary
+    # Si quieres una base de datos separada para las colas, cambia el nombre aquí:
+    # database: <%= ENV["DB_NAME"] %>_queue
