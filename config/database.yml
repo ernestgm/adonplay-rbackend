@@ -49,5 +49,11 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  <<: *default
-  database: <%= ENV["DB_NAME"] %>
+  primary: &production_primary
+    <<: *default
+    database: <%= ENV["DB_NAME"] %>
+
+  queue:
+    <<: *production_primary
+    # Si quieres una base de datos separada para las colas, cambia el nombre aquí:
+    # database: <%= ENV["DB_NAME"] %>_queue
