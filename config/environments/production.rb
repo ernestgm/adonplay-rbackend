@@ -85,7 +85,7 @@ Rails.application.configure do
 
   config.action_cable.allowed_request_origins = [
     /.*\.geniusdevelops\.com/,
-    "wss://prod-api-adonplay.geniusdevelops.com",
+    "wss://prod-ws-adonplay.geniusdevelops.com",
     /wss:\/\/.*\.geniusdevelops\.com/,
   ]
   #
