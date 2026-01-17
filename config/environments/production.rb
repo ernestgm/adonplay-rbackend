@@ -25,7 +25,7 @@ Rails.application.configure do
   config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
+  config.force_ssl = false
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
@@ -87,12 +87,6 @@ Rails.application.configure do
 
   config.action_cable.allowed_request_origins = [
     /.*\.geniusdevelops\.com/,
-    'http://10.0.2.2:3001',
-    'http://api-adonplay.local', # Your Rails app itself
-    'http://player-adonplay.local', # Your Rails app itself
-    'http://frontend-adonplay.local', # Your Rails app itself
-    /http:\/\/localhost:\d+/, # Regex for any localhost port (less secure, but quick for dev)
-    nil # Allows requests with no Origin header (e.g., some internal Docker calls, older clients, Postman)
   ]
   #
   # Skip DNS rebinding protection for the default health check endpoint.
