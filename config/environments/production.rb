@@ -84,6 +84,7 @@ Rails.application.configure do
     "127.0.0.1",
     IPAddr.new("172.16.0.0/12"),
     "geniusdevelops.com",
+    "prod-player-adonplay.geniusdevelops.com",    # Tu nueva URL de API
     "prod-api-adonplay.geniusdevelops.com",    # Tu nueva URL de API
     "prod-ws-adonplay.geniusdevelops.com",     # Tu nueva URL de WebSockets
     /.*\.geniusdevelops\.com/
@@ -94,6 +95,7 @@ Rails.application.configure do
   config.action_cable.allowed_request_origins = [
     "https://prod-api-adonplay.geniusdevelops.com",
     "https://prod-ws-adonplay.geniusdevelops.com",
+    "https://prod-player-adonplay.geniusdevelops.com",
     "https://geniusdevelops.com",
     /https:\/\/.*\.geniusdevelops\.com/,
 
