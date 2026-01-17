@@ -77,17 +77,34 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
+  # 1. AUTORIZACIÓN DE HOSTS
+  # Esto permite que Rails acepte peticiones HTTP/HTTPS a estos dominios
   config.hosts = [
-    "https://prod-api-adonplay.geniusdevelops.com",
-    /https:\/\/.*\.geniusdevelops\.com/,
-    'https://geniusdevelops.com',
+    "localhost",
+    "127.0.0.1",
+    IPAddr.new("172.16.0.0/12"),
+    "geniusdevelops.com",
+    "prod-api-adonplay.geniusdevelops.com",    # Tu nueva URL de API
+    "prod-ws-adonplay.geniusdevelops.com",     # Tu nueva URL de WebSockets
+    /.*\.geniusdevelops\.com/
   ]
 
+  # 2. CONFIGURACIÓN DE ACTION CABLE (WSS)
+  # Aquí permitimos que el handshake de WebSocket sea aceptado desde estos orígenes
   config.action_cable.allowed_request_origins = [
-    /.*\.geniusdevelops\.com/,
-    "wss://prod-ws-adonplay.geniusdevelops.com",
-    /wss:\/\/.*\.geniusdevelops\.com/,
+    "https://prod-api-adonplay.geniusdevelops.com",
+    "https://prod-ws-adonplay.geniusdevelops.com",
+    "https://geniusdevelops.com",
+    /https:\/\/.*\.geniusdevelops\.com/,
+
+    # Orígenes locales para desarrollo/testing si fuera necesario
+    'http://10.0.2.2:3001',
+    'http://api-adonplay.local',
+    /http:\/\/localhost:\d+/
   ]
+
+  # URL específica para que Action Cable sepa dónde escuchar (opcional pero recomendado)
+  config.action_cable.url = "wss://prod-ws-adonplay.geniusdevelops.com/cable"
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
