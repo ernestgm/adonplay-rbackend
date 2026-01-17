@@ -90,19 +90,16 @@ Rails.application.configure do
     /.*\.geniusdevelops\.com/
   ]
 
-  # 2. CONFIGURACIÓN DE ACTION CABLE (WSS)
-  # Aquí permitimos que el handshake de WebSocket sea aceptado desde estos orígenes
   config.action_cable.allowed_request_origins = [
     "https://prod-api-adonplay.geniusdevelops.com",
     "https://prod-ws-adonplay.geniusdevelops.com",
-    "https://prod-player-adonplay.geniusdevelops.com",
-    "https://geniusdevelops.com",
     /https:\/\/.*\.geniusdevelops\.com/,
 
-    # Orígenes locales para desarrollo/testing si fuera necesario
-    'http://10.0.2.2:3001',
-    'http://api-adonplay.local',
-    /http:\/\/localhost:\d+/
+    # CRUCIAL PARA ANDROID:
+    # 1. Permite conexiones sin el header 'Origin' (común en clientes nativos)
+    nil,
+    # 2. Permite el protocolo interno de apps si lo envían
+    /android-app:\/\/.*/
   ]
 
   # URL específica para que Action Cable sepa dónde escuchar (opcional pero recomendado)
