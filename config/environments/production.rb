@@ -22,10 +22,10 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  config.assume_ssl = false
+  config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = false
+  config.force_ssl = true
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
@@ -78,15 +78,15 @@ Rails.application.configure do
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   config.hosts = [
-    "localhost",
-    "127.0.0.1",
-    IPAddr.new("172.16.0.0/12"),
-    "geniusdevelops.com",     # Allow requests from example.com
-    /.*\.geniusdevelops\.com/ # Allow requests from subdomains like `www.example.com`
+    "https://prod-api-adonplay.geniusdevelops.com",
+    /https:\/\/.*\.geniusdevelops\.com/,
+    'https://geniusdevelops.com',
   ]
 
   config.action_cable.allowed_request_origins = [
     /.*\.geniusdevelops\.com/,
+    "wss://prod-api-adonplay.geniusdevelops.com",
+    /wss:\/\/.*\.geniusdevelops\.com/,
   ]
   #
   # Skip DNS rebinding protection for the default health check endpoint.
