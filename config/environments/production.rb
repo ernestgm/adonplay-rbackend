@@ -107,4 +107,7 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  # Solo para identificar el problema en los logs de producción
+  puts "DEBUG: Action Cable Request Origin: #{request.origin}" if defined?(request)
 end
