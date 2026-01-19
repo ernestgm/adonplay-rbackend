@@ -1,6 +1,6 @@
 class DeviceValidator
   UUID_REGEX = /\A[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}\z/
-  ANDROID_ID_REGEX = /\A[0-9a-fA-F]{16}\z/
+  ANDROID_ID_REGEX = /\A[0-9a-fA-F]{13,16}\z/
 
   def self.is_valid_device_id?(device_id)
     return false if device_id.blank?
