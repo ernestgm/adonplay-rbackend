@@ -25,10 +25,7 @@ class StatusActionsChannel < ApplicationCable::Channel
   end
 
   def receive(data)
-    if data["action"] == "receive"
-      update_presence if android_device?
-    end
-      # Reenviamos mensajes normales a todos
+    update_presence if android_device?
 
     data["device_id"] = current_device_id
     ActionCable.server.broadcast(redis_key, data)
