@@ -80,7 +80,7 @@ module Api
           slide_medias_ids = params[:ids].map(&:to_i)
 
           # Scope to QRs owned by current user if not admin
-          slides_medias = scope_to_owner(SlideMedia.where(id: slide_medias_ids))
+          slides_medias = scope_slides_to_owner(SlideMedia.where(id: slide_medias_ids))
 
           affected_device_ids = slides_medias.includes(:slide => :devices)
                                              .flat_map { |sm| sm.slide.devices.pluck(:device_id) }

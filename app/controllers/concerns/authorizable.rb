@@ -38,6 +38,14 @@ module Authorizable
     end
   end
 
+  def scope_slides_to_owner(relation)
+    if current_user.role == 'admin'
+      relation.all
+    else
+      relation.joins(slide: :business).where(businesses: { owner_id: current_user.id })
+    end
+  end
+
   def scope_by_owner(relation, owner_id)
     relation.joins(:business).where(businesses: { owner_id: owner_id })
   end
