@@ -9,6 +9,10 @@ class Media < ApplicationRecord
   validates :media_type, presence: true, inclusion: { in: %w[image video audio] }
   validates :file_path, presence: false
   validates :owner_id, presence: true
+  validates :json_path, presence: true, if: :is_editable?
+  validate :is_editable_only_for_images
+
+  before_validation :clear_json_path_if_not_editable
 
   # Scopes
   scope :images, -> { where(media_type: 'image') }
@@ -22,7 +26,21 @@ class Media < ApplicationRecord
       'media_type.inclusion' => 'El tipo de medio debe ser imagen, video o audio.',
       'file_path.required' => 'La ruta del archivo es obligatoria.',
       'file_path.string' => 'La ruta del archivo debe ser una cadena de texto.',
-      'owner_id.exists' => 'El usuario dueño debe existir.'
+      'owner_id.exists' => 'El usuario dueño debe existir.',
+      'json_path.required' => 'La ruta del JSON es obligatoria cuando la imagen es editable.',
+      'is_editable.invalid_type' => 'Solo las imágenes pueden ser editables.'
     }
+  end
+
+  private
+
+  def is_editable_only_for_images
+    if is_editable && media_type != 'image'
+      errors.add(:is_editable, messages['is_editable.invalid_type'])
+    end
+  end
+
+  def clear_json_path_if_not_editable
+    self.json_path = nil unless is_editable
   end
 end

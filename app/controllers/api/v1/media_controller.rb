@@ -97,9 +97,11 @@ module Api
 
       # POST /api/v1/media
       def create
-        # Get media type from params
+        # Get media type and other fields from params
         media_type = params[:media_type]
         file_path = params[:file_path]
+        is_editable = params[:is_editable]
+        json_path = params[:json_path]
 
         # Validate media type
         unless media_type.present? && %w[image video audio].include?(media_type)
@@ -110,7 +112,13 @@ module Api
         # Set owner to current user if not provided
         owner_id = params[:owner_id].present? ? params[:owner_id] : current_user.id
 
-        media = Media.new(media_type: media_type, owner_id: owner_id, file_path: file_path)
+        media = Media.new(
+          media_type: media_type,
+          owner_id: owner_id,
+          file_path: file_path,
+          is_editable: is_editable,
+          json_path: json_path
+        )
         if media.save
           render json: MediaSerializer.new(media).as_json, status: :created
         else
@@ -210,7 +218,7 @@ module Api
 
       def media_params
         # Support direct JSON format without nesting
-        params.permit(:media_type, :owner_id, :file_path)
+        params.permit(:media_type, :owner_id, :file_path, :is_editable, :json_path)
       end
 
       def verify_media_ownership
