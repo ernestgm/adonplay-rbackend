@@ -17,15 +17,10 @@ module Api
         if current_user.role == 'admin'
           @devices = Device.all
         else
-          # For owner, get devices associated with slides, marquees, or QRs that belong to businesses they own
-          @devices = Device.left_joins(slide: :business, marquee: :business, qr: :business)
-                          .where('slides.business_id IN (SELECT id FROM businesses WHERE owner_id = ?) OR 
-                                 marquees.business_id IN (SELECT id FROM businesses WHERE owner_id = ?) OR 
-                                 qrs.business_id IN (SELECT id FROM businesses WHERE owner_id = ?)', 
-                                 current_user.id, current_user.id, current_user.id)
-                          .distinct
+          owner_id = current_user.id
+          @devices = Device.where(users_id: owner_id)
         end
-        
+
         render json: @devices.map { |device| DeviceSerializer.new(device).as_json }, status: :ok
       end
       
