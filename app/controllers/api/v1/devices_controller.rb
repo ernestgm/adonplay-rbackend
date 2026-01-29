@@ -7,7 +7,7 @@ module Api
       
       before_action :authenticate_request
       before_action :set_device, only: [:show, :update]
-      before_action :verify_device_ownership, only: [:show, :update, :destroy]
+      before_action :verify_device_ownership, only: [:update, :destroy]
       before_action :verify_associations_ownership, only: [:create, :update]
       before_action :set_device_by_id_and_user, only: [:show_by_device_id]
       after_action :notify_changes, only: [:update]
@@ -182,17 +182,7 @@ module Api
         is_owner = false
         
         # Check slide association
-        if @device.slide && @device.slide.business && @device.slide.business.owner_id == current_user.id
-          is_owner = true
-        end
-        
-        # Check marquee association
-        if !is_owner && @device.marquee && @device.marquee.business && @device.marquee.business.owner_id == current_user.id
-          is_owner = true
-        end
-        
-        # Check QR association
-        if !is_owner && @device.qr && @device.qr.business && @device.qr.business.owner_id == current_user.id
+        if @device.users_id == current_user.id
           is_owner = true
         end
         
