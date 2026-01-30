@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_14_040715) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_21_223000) do
   create_table "businesses", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description", null: false
@@ -76,6 +76,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_14_040715) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "owner_id"
+    t.boolean "is_editable", default: false
+    t.string "json_path"
     t.index ["media_type"], name: "index_media_on_media_type"
     t.index ["owner_id"], name: "index_media_on_owner_id"
   end
