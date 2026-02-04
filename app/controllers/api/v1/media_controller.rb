@@ -43,7 +43,6 @@ module Api
 
           @media = Media
                      .where.not(media_type: "audio")
-                     .where.not(id: media_ids_already_used_by_slide)
                      .where(
                        media_table[:owner_id]
                          .eq(owner)
@@ -55,7 +54,6 @@ module Api
         else
           @media = Media.where(owner_id: current_user.id)
                         .where.not(media_type: "audio")
-                        .where.not(id: media_ids_already_used_by_slide)
         end
 
         render json: @media.map { |media| MediaSerializer.new(media).as_json }, status: :ok
@@ -72,7 +70,6 @@ module Api
           media_table = Media.arel_table
           @media = Media
                      .where(media_type: "audio")
-                     .where.not(id: media_ids_already_used_by_slide)
                      .where(
                        media_table[:owner_id]
                          .eq(owner)
@@ -84,7 +81,6 @@ module Api
         else
           @media = Media.where(owner_id: current_user.id)
                         .where(media_type: "audio")
-                        .where.not(id: media_ids_already_used_by_slide)
         end
 
         render json: @media.map { |media| MediaSerializer.new(media).as_json }, status: :ok
