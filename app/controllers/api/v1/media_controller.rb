@@ -32,56 +32,69 @@ module Api
 
       # GET /api/v1/medias_excepted/:slide_id
       def index_excepted
-        specific_slide_id = params[:slide_id] # O de donde obtengas el ID del slide
-        media_ids_already_used_by_slide = SlideMedia.pluck(:media_id).uniq
+        specific_slide_id = params[:slide_id]
 
+        # Validamos que el slide_id esté presente para evitar errores
+        return render json: { error: 'Slide ID is required' }, status: :bad_request if specific_slide_id.blank?
+
+        # 1. Buscamos los IDs ya vinculados (como es unique, no habrá duplicados aquí)
+        used_media_ids = SlideMedia.where(slide_id: specific_slide_id).pluck(:media_id)
+
+        # 2. Construimos la consulta base según el rol
         if current_user.role == 'admin'
-          @slide = Slide.find(specific_slide_id)
-          owner = @slide.business.owner_id
+          @slide = Slide.find_by(id: specific_slide_id)
+          return render json: { error: 'Slide not found' }, status: :not_found unless @slide
 
+          owner_id = @slide.business.owner_id
           media_table = Media.arel_table
 
-          @media = Media
-                     .where.not(media_type: "audio")
-                     .where(
-                       media_table[:owner_id]
-                         .eq(owner)
-                         .or(
-                           media_table[:owner_id]
-                               .eq(current_user.id)
-                         )
-                     )
+          @media = Media.where.not(media_type: "audio")
+                        .where(
+                          media_table[:owner_id].eq(owner_id)
+                                                .or(media_table[:owner_id].eq(current_user.id))
+                        )
         else
           @media = Media.where(owner_id: current_user.id)
                         .where.not(media_type: "audio")
         end
+
+        # 3. Excluimos los IDs usados
+        # Rails genera un "WHERE id NOT IN (...)" automáticamente
+        @media = @media.where.not(id: used_media_ids) if used_media_ids.present?
 
         render json: @media.map { |media| MediaSerializer.new(media).as_json }, status: :ok
       end
 
       # GET /api/v1/all_audio_excepted/:slide_id
       def all_audio_excepted
-        specific_slide_id = params[:slide_id] # O de donde obtengas el ID del slide
-        @slide = Slide.find(specific_slide_id)
-        owner = @slide.business.owner_id
-        media_ids_already_used_by_slide = SlideMedia.pluck(:audio_media_id).uniq
+        specific_slide_id = params[:slide_id]
 
+        # 1. Validación inicial
+        return render json: { error: 'Slide ID is required' }, status: :bad_request if specific_slide_id.blank?
+
+        @slide = Slide.find_by(id: specific_slide_id)
+        return render json: { error: 'Slide not found' }, status: :not_found unless @slide
+
+        # 2. Obtener IDs de audios ya vinculados a este slide
+        # Usamos media_id (que es el nombre de la columna en tu migración)
+        used_media_ids = SlideMedia.where(slide_id: @slide.id).pluck(:media_id)
+
+        # 3. Definir el scope base (Solo audios)
         if current_user.role == 'admin'
+          owner_id = @slide.business.owner_id
           media_table = Media.arel_table
-          @media = Media
-                     .where(media_type: "audio")
-                     .where(
-                       media_table[:owner_id]
-                         .eq(owner)
-                         .or(
-                           media_table[:owner_id]
-                             .eq(current_user.id)
-                         )
-                     )
+
+          @media = Media.where(media_type: "audio")
+                        .where(
+                          media_table[:owner_id].eq(owner_id)
+                                                .or(media_table[:owner_id].eq(current_user.id))
+                        )
         else
-          @media = Media.where(owner_id: current_user.id)
-                        .where(media_type: "audio")
+          @media = Media.where(owner_id: current_user.id, media_type: "audio")
         end
+
+        # 4. Excluir los audios que ya están en el slide
+        @media = @media.where.not(id: used_media_ids) if used_media_ids.any?
 
         render json: @media.map { |media| MediaSerializer.new(media).as_json }, status: :ok
       end
