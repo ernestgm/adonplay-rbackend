@@ -6,6 +6,7 @@ module Api
       include ErrorFormatter
 
       before_action :authenticate_request, only: [ :index, :update ]
+      before_action :set_device, only: [:destroy]
       before_action :verify_request, only: [:create_login_code]
       before_action -> { check_device_id!(params[:device_id]) }, only: [:create]
       before_action -> { check_valid_player!(params[:device_id], params[:code]) }, only: [:create_login_code]
@@ -91,10 +92,23 @@ module Api
         end
       end
 
-
+      # DELETE /api/v1/device_verify_codes
+      def destroy
+        if @device.destroy
+          render json: { message: "Device deleted successfully", id: @device.id }, status: :ok
+        else
+          render json: { errors: format_errors(@device) }, status: :unprocessable_entity
+        end
+      end
       
       private
-      
+
+      def set_device
+        @device = DevicesVerifyCodes.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: 'Device not found' }, status: :not_found
+      end
+
       def device_params
         # Support direct JSON format without nesting
         params.permit(:device_id)

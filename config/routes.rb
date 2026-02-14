@@ -55,6 +55,7 @@ Rails.application.routes.draw do
 
       resources :devices_verify_codes, only: [:index, :update, :create]
       post '/create_login_code', to: 'devices_verify_codes#create_login_code'
+      delete '/devices_verify_codes', to: 'devices_verify_codes#destroy' # Bulk delete QRs
     end
   end
 
